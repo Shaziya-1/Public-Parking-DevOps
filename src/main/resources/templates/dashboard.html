@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: htmlHead(${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+
+<!-- Navbar -->
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<!-- Main Content -->
+<main class="flex-grow-1 py-4">
+<div class="container-fluid px-4">
+
+    <!-- Page Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-speedometer2 text-primary me-2"></i>Parking Dashboard
+            </h1>
+            <p class="text-muted mb-0 small">
+                Live overview of public parking availability &mdash;
+                <span class="badge bg-warning text-dark">Illustrative Sample Data</span>
+            </p>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <span class="text-muted small" id="last-refreshed">
+                <i class="bi bi-clock me-1"></i>Updated: <span id="refresh-time">now</span>
+            </span>
+            <button id="refresh-btn" class="btn btn-outline-primary btn-sm"
+                    onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise me-1"></i>Refresh
+            </button>
+            <a th:href="@{/locations/new}" class="btn btn-primary btn-sm" id="btn-add-location">
+                <i class="bi bi-plus-circle me-1"></i>Add Location
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash messages -->
+    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        <span th:if="${param.success[0] == 'deleted'}">Parking location removed successfully.</span>
+        <span th:if="${param.success[0] == 'created'}">Parking location created successfully.</span>
+        <span th:if="${param.success[0] == 'updated'}">Parking location updated successfully.</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- ── SUMMARY CARDS ──────────────────────────────────────────────────── -->
+    <div class="row g-3 mb-4">
+
+        <!-- Total Locations -->
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card stat-card border-0 shadow-sm h-100" id="card-total-locations">
+                <div class="card-body text-center py-3">
+                    <div class="stat-icon bg-primary-subtle text-primary mb-2">
+                        <i class="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div class="stat-value text-dark fw-bold" th:text="${summary.totalLocations}">0</div>
+                    <div class="stat-label text-muted">Total Locations</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Capacity -->
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card stat-card border-0 shadow-sm h-100" id="card-total-capacity">
+                <div class="card-body text-center py-3">
+                    <div class="stat-icon bg-info-subtle text-info mb-2">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+                    <div class="stat-value text-dark fw-bold" th:text="${summary.totalCapacity}">0</div>
+                    <div class="stat-label text-muted">Total Capacity</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Available Spaces -->
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card stat-card border-0 shadow-sm h-100" id="card-available">
+                <div class="card-body text-center py-3">
+                    <div class="stat-icon bg-success-subtle text-success mb-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="stat-value text-success fw-bold" th:text="${summary.totalAvailable}">0</div>
+                    <div class="stat-label text-muted">Available Spaces</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Occupied Spaces -->
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card stat-card border-0 shadow-sm h-100" id="card-occupied">
+                <div class="card-body text-center py-3">
+                    <div class="stat-icon bg-warning-subtle text-warning mb-2">
+                        <i class="bi bi-car-front-fill"></i>
+                    </div>
+                    <div class="stat-value text-warning fw-bold" th:text="${summary.totalOccupied}">0</div>
+                    <div class="stat-label text-muted">Occupied Spaces</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilization -->
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card stat-card border-0 shadow-sm h-100" id="card-utilization">
+                <div class="card-body text-center py-3">
+                    <div class="stat-icon bg-purple-subtle text-purple mb-2">
+                        <i class="bi bi-pie-chart-fill"></i>
+                    </div>
+                    <div class="stat-value fw-bold"
+                         th:classappend="${summary.overallUtilizationPercentage >= 85} ? 'text-danger' :
+                                         (${summary.overallUtilizationPercentage >= 50} ? 'text-warning' : 'text-success')"
+                         th:text="${#numbers.formatDecimal(summary.overallUtilizationPercentage, 1, 1)} + '%'">0%</div>
+                    <div class="stat-label text-muted">Utilization</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exception Counts -->
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card stat-card border-0 shadow-sm h-100" id="card-exceptions">
+                <div class="card-body text-center py-3">
+                    <div class="stat-icon bg-danger-subtle text-danger mb-2">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="stat-value text-danger fw-bold"
+                         th:text="${summary.fullLocations + summary.staleLocations}">0</div>
+                    <div class="stat-label text-muted">
+                        <span th:text="${summary.fullLocations}">0</span> Full,
+                        <span th:text="${summary.staleLocations}">0</span> Stale
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overall utilization bar -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-2 px-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-muted fw-semibold">Overall Utilization</small>
+                <small class="text-muted"
+                       th:text="${summary.totalOccupied} + ' / ' + ${summary.totalCapacity} + ' spaces'"></small>
+            </div>
+            <div class="progress" style="height: 10px;" role="progressbar"
+                 th:attr="aria-valuenow=${summary.overallUtilizationPercentage},aria-valuemax=100">
+                <div class="progress-bar"
+                     th:classappend="${summary.overallUtilizationPercentage >= 85} ? 'bg-danger' :
+                                     (${summary.overallUtilizationPercentage >= 50} ? 'bg-warning' : 'bg-success')"
+                     th:style="'width: ' + ${summary.overallUtilizationPercentage} + '%'"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SEARCH & FILTER ─────────────────────────────────────────────────── -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form th:action="@{/}" method="get" id="search-filter-form" class="row g-2 align-items-end">
+                <!-- Search box -->
+                <div class="col-12 col-md-6 col-lg-5">
+                    <label for="search" class="form-label small fw-semibold text-muted mb-1">
+                        <i class="bi bi-search me-1"></i>Search Locations
+                    </label>
+                    <div class="input-group">
+                        <input type="text" id="search" name="search"
+                               class="form-control form-control-sm"
+                               placeholder="Search by name, area, or address..."
+                               th:value="${activeSearch}"
+                               autocomplete="off"/>
+                        <button class="btn btn-primary btn-sm" type="submit" id="btn-search">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter buttons -->
+                <div class="col-12 col-md-6 col-lg-5">
+                    <label class="form-label small fw-semibold text-muted mb-1">
+                        <i class="bi bi-funnel me-1"></i>Filter by Status
+                    </label>
+                    <div class="btn-group btn-group-sm d-flex flex-wrap gap-1" role="group">
+                        <a th:href="@{/}" class="btn btn-sm"
+                           th:classappend="${activeFilter == null and activeSearch == null} ? 'btn-dark' : 'btn-outline-secondary'"
+                           id="filter-all">All</a>
+                        <a th:href="@{/(filter='AVAILABLE')}" class="btn btn-sm"
+                           th:classappend="${activeFilter == 'AVAILABLE'} ? 'btn-success' : 'btn-outline-success'"
+                           id="filter-available">Available</a>
+                        <a th:href="@{/(filter='LOW')}" class="btn btn-sm"
+                           th:classappend="${activeFilter == 'LOW'} ? 'btn-warning' : 'btn-outline-warning'"
+                           id="filter-low">Low</a>
+                        <a th:href="@{/(filter='FULL')}" class="btn btn-sm"
+                           th:classappend="${activeFilter == 'FULL'} ? 'btn-danger' : 'btn-outline-danger'"
+                           id="filter-full">Full</a>
+                        <a th:href="@{/(filter='STALE')}" class="btn btn-sm"
+                           th:classappend="${activeFilter == 'STALE'} ? 'btn-secondary' : 'btn-outline-secondary'"
+                           id="filter-stale">Stale</a>
+                    </div>
+                </div>
+
+                <!-- Clear -->
+                <div class="col-12 col-md-auto col-lg-auto">
+                    <a th:href="@{/}" class="btn btn-outline-secondary btn-sm" id="btn-clear-filters">
+                        <i class="bi bi-x-circle me-1"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── LOCATIONS TABLE ────────────────────────────────────────────────── -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center py-2 px-3">
+            <span class="fw-semibold text-dark">
+                <i class="bi bi-list-ul me-2 text-primary"></i>
+                Parking Locations
+                <span class="badge bg-secondary ms-2" th:text="${#lists.size(locations)}">0</span>
+            </span>
+            <small class="text-muted">
+                <span th:if="${activeSearch != null}">
+                    Search: "<strong th:text="${activeSearch}"></strong>"
+                </span>
+                <span th:if="${activeFilter != null}">
+                    Filter: <strong th:text="${activeFilter}"></strong>
+                </span>
+            </small>
+        </div>
+        <div class="card-body p-0">
+
+            <!-- Empty state -->
+            <div th:if="${#lists.isEmpty(locations)}" class="text-center py-5" id="empty-state">
+                <i class="bi bi-p-square display-4 text-muted"></i>
+                <p class="text-muted mt-3 mb-1">No parking locations found.</p>
+                <p class="text-muted small">Try adjusting your search or filter criteria.</p>
+                <a th:href="@{/}" class="btn btn-outline-primary btn-sm mt-2">Show All</a>
+            </div>
+
+            <!-- Table -->
+            <div th:if="${!#lists.isEmpty(locations)}" class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="locations-table">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Location</th>
+                            <th>Area</th>
+                            <th class="text-center">Capacity</th>
+                            <th class="text-center">Occupied</th>
+                            <th class="text-center">Available</th>
+                            <th class="text-center">Utilization</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Last Updated</th>
+                            <th class="text-center pe-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="loc : ${locations}" th:id="'row-loc-' + ${loc.id}">
+                            <!-- Name -->
+                            <td class="ps-3">
+                                <a th:href="@{/locations/{id}(id=${loc.id})}"
+                                   class="text-decoration-none fw-semibold text-dark location-name"
+                                   th:text="${loc.name}">Location Name</a>
+                                <div class="text-muted small" th:text="${loc.locationCode}"></div>
+                            </td>
+                            <!-- Area -->
+                            <td>
+                                <span class="text-muted" th:text="${loc.area}">Area</span>
+                            </td>
+                            <!-- Capacity -->
+                            <td class="text-center fw-semibold" th:text="${loc.totalCapacity}">0</td>
+                            <!-- Occupied -->
+                            <td class="text-center" th:text="${loc.occupiedSpaces}">0</td>
+                            <!-- Available -->
+                            <td class="text-center fw-bold"
+                                th:classappend="${loc.availableSpaces == 0} ? 'text-danger' :
+                                               (${loc.availableSpaces < loc.totalCapacity * 0.15} ? 'text-warning' : 'text-success')"
+                                th:text="${loc.availableSpaces}">0</td>
+                            <!-- Utilization bar -->
+                            <td class="text-center" style="min-width:100px;">
+                                <div class="progress mb-1" style="height:6px;">
+                                    <div class="progress-bar"
+                                         th:classappend="${loc.utilizationPercentage >= 100} ? 'bg-danger' :
+                                                         (${loc.utilizationPercentage >= 85} ? 'bg-warning' : 'bg-success')"
+                                         th:style="'width:' + ${loc.utilizationPercentage} + '%'"></div>
+                                </div>
+                                <small th:text="${#numbers.formatDecimal(loc.utilizationPercentage,1,1)} + '%'"
+                                       th:classappend="${loc.utilizationPercentage >= 100} ? 'text-danger fw-bold' :
+                                                       (${loc.utilizationPercentage >= 85} ? 'text-warning' : 'text-muted')"></small>
+                            </td>
+                            <!-- Status badge -->
+                            <td class="text-center">
+                                <span class="badge rounded-pill"
+                                      th:classappend="${loc.availabilityStatus == 'FULL'} ? 'bg-danger' :
+                                                      (${loc.availabilityStatus == 'LOW'} ? 'bg-warning text-dark' :
+                                                      (${loc.availabilityStatus == 'MEDIUM'} ? 'bg-info text-dark' : 'bg-success'))"
+                                      th:text="${loc.availabilityStatus}">STATUS</span>
+                            </td>
+                            <!-- Last Updated -->
+                            <td class="text-center">
+                                <small class="text-muted"
+                                       th:text="${#temporals.format(loc.lastUpdated, 'dd MMM HH:mm')}">--</small>
+                            </td>
+                            <!-- Actions -->
+                            <td class="text-center pe-3">
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/locations/{id}(id=${loc.id})}"
+                                       class="btn btn-outline-primary btn-sm" title="View Details">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a th:href="@{/events/new(locationId=${loc.id})}"
+                                       class="btn btn-outline-success btn-sm" title="Record Update">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a th:href="@{/locations/{id}/edit(id=${loc.id})}"
+                                       class="btn btn-outline-secondary btn-sm" title="Edit">
+                                        <i class="bi bi-gear"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Card footer with alert summary -->
+        <div class="card-footer bg-white border-top py-2 px-3">
+            <div class="d-flex flex-wrap gap-3">
+                <a th:href="@{/(filter='FULL')}" class="text-decoration-none">
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                        <i class="bi bi-x-circle me-1"></i>
+                        <span th:text="${summary.fullLocations}">0</span> Full
+                    </span>
+                </a>
+                <a th:href="@{/(filter='LOW')}" class="text-decoration-none">
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        <span th:text="${summary.lowAvailabilityLocations}">0</span> Low Availability
+                    </span>
+                </a>
+                <a th:href="@{/(filter='STALE')}" class="text-decoration-none">
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+                        <i class="bi bi-clock-history me-1"></i>
+                        <span th:text="${summary.staleLocations}">0</span> Stale Data
+                    </span>
+                </a>
+                <a th:href="@{/alerts}" class="btn btn-sm btn-outline-danger ms-auto">
+                    <i class="bi bi-bell me-1"></i>View All Alerts
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<!-- Footer -->
+<div th:replace="~{fragments/header :: footer}"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmCA+GEexSqYF2JGVISMFHXtJJY"
+        crossorigin="anonymous"></script>
+<!-- Custom JS -->
+<script th:src="@{/js/dashboard.js}"></script>
+<script th:inline="javascript">
+    // Pass refresh interval from server to JS
+    const REFRESH_SECONDS = /*[[${refreshSeconds}]]*/ 30;
+    initDashboard(REFRESH_SECONDS);
+</script>
+</body>
+</html>

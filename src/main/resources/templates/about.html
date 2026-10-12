@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: htmlHead(${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<div th:replace="~{fragments/header :: navbar}"></div>
+<main class="flex-grow-1 py-4">
+<div class="container" style="max-width:860px;">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-primary text-white py-3">
+            <h1 class="h5 mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>About ParkWatch</h1>
+        </div>
+        <div class="card-body p-4">
+            <h2 class="h5 fw-bold">DevOps-Enabled Public Parking Availability Dashboard</h2>
+            <p class="text-muted">Academic Project — Department of Computer Science</p>
+            <hr/>
+            <dl class="row">
+                <dt class="col-sm-4">Student</dt>
+                <dd class="col-sm-8">Sajiya Shaikh</dd>
+                <dt class="col-sm-4">Roll Number</dt>
+                <dd class="col-sm-8">24102A2005</dd>
+                <dt class="col-sm-4">Application Version</dt>
+                <dd class="col-sm-8">1.0.0</dd>
+                <dt class="col-sm-4">Technology Stack</dt>
+                <dd class="col-sm-8">Java 21 · Spring Boot 3.3 · H2 Database · Thymeleaf · Bootstrap 5</dd>
+                <dt class="col-sm-4">DevOps Tools</dt>
+                <dd class="col-sm-8">Git · Jenkins · Docker · Ansible · Maven</dd>
+                <dt class="col-sm-4">Data Notice</dt>
+                <dd class="col-sm-8">
+                    <span class="badge bg-warning text-dark">Important</span>
+                    All parking locations and occupancy values displayed are
+                    <strong>illustrative sample data</strong> created for academic demonstration.
+                    They do not represent real-time sensor readings or actual municipal parking conditions.
+                </dd>
+            </dl>
+            <hr/>
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="/actuator/health" class="btn btn-outline-success btn-sm" target="_blank">
+                    <i class="bi bi-heart-pulse me-1"></i>Health Check
+                </a>
+                <a href="/h2-console" class="btn btn-outline-secondary btn-sm" target="_blank">
+                    <i class="bi bi-database me-1"></i>H2 Console
+                </a>
+                <a href="/api/v1/health" class="btn btn-outline-primary btn-sm" target="_blank">
+                    <i class="bi bi-code-slash me-1"></i>API Health
+                </a>
+                <a th:href="@{/}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-speedometer2 me-1"></i>Go to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+<div th:replace="~{fragments/header :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmCA+GEexSqYF2JGVISMFHXtJJY"
+        crossorigin="anonymous"></script>
+</body>
+</html>

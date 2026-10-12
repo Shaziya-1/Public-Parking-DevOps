@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: htmlHead(${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1 py-4">
+<div class="container-fluid px-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 fw-bold text-dark mb-1">
+                <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Alerts &amp; Exceptions
+            </h1>
+            <p class="text-muted mb-0 small">Active alerts derived from live parking data</p>
+        </div>
+        <a th:href="@{/}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Alert Summary Badges -->
+    <div class="row g-3 mb-4">
+        <div class="col-auto">
+            <div class="card border-0 shadow-sm text-center px-4 py-3" id="alert-count-critical">
+                <div class="display-6 fw-bold text-danger" th:text="${criticalCount}">0</div>
+                <div class="text-muted small">Critical</div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="card border-0 shadow-sm text-center px-4 py-3" id="alert-count-high">
+                <div class="display-6 fw-bold text-warning" th:text="${highCount}">0</div>
+                <div class="text-muted small">High</div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="card border-0 shadow-sm text-center px-4 py-3" id="alert-count-medium">
+                <div class="display-6 fw-bold text-info" th:text="${mediumCount}">0</div>
+                <div class="text-muted small">Medium</div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="card border-0 shadow-sm text-center px-4 py-3">
+                <div class="display-6 fw-bold text-secondary" th:text="${totalAlerts}">0</div>
+                <div class="text-muted small">Total Alerts</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No alerts state -->
+    <div th:if="${#lists.isEmpty(alerts)}" class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-shield-check display-4 text-success"></i>
+            <h2 class="h5 mt-3 text-success">All Clear!</h2>
+            <p class="text-muted">No active alerts at this time. All parking locations are operating normally.</p>
+            <a th:href="@{/}" class="btn btn-outline-primary btn-sm">Return to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Alerts list -->
+    <div th:if="${!#lists.isEmpty(alerts)}" class="d-flex flex-column gap-3" id="alerts-list">
+        <div th:each="alert : ${alerts}"
+             class="card border-0 shadow-sm alert-card"
+             th:classappend="${alert.severity.name() == 'CRITICAL'} ? 'border-start border-danger border-4' :
+                             (${alert.severity.name() == 'HIGH'} ? 'border-start border-warning border-4' : 'border-start border-info border-4')">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between align-items-start gap-3">
+                    <div class="flex-grow-1">
+                        <!-- Header row -->
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <span class="badge rounded-pill fw-semibold"
+                                  th:classappend="${alert.severity.name() == 'CRITICAL'} ? 'bg-danger' :
+                                                 (${alert.severity.name() == 'HIGH'} ? 'bg-warning text-dark' : 'bg-info text-dark')"
+                                  th:text="${alert.severity}">SEVERITY</span>
+                            <span class="badge bg-light text-dark border"
+                                  th:text="${alert.alertType.toString().replace('_', ' ')}">TYPE</span>
+                            <h2 class="h6 fw-bold mb-0" th:text="${alert.locationName}">Location</h2>
+                            <span class="text-muted small">— <span th:text="${alert.area}"></span></span>
+                        </div>
+                        <!-- Reason -->
+                        <p class="mb-2 text-dark" th:text="${alert.reason}"></p>
+                        <!-- Metrics -->
+                        <div class="d-flex flex-wrap gap-3">
+                            <span class="text-muted small">
+                                <i class="bi bi-car-front me-1"></i>
+                                Available: <strong th:text="${alert.availableSpaces}">0</strong> /
+                                <span th:text="${alert.totalCapacity}">0</span>
+                            </span>
+                            <span class="text-muted small">
+                                <i class="bi bi-pie-chart me-1"></i>
+                                Utilization: <strong th:text="${#numbers.formatDecimal(alert.utilizationPercentage,1,1)} + '%'">0%</strong>
+                            </span>
+                            <span class="text-muted small">
+                                <i class="bi bi-clock me-1"></i>
+                                <span th:text="${#temporals.format(alert.detectedAt, 'dd MMM yyyy, HH:mm')}">—</span>
+                            </span>
+                        </div>
+                    </div>
+                    <!-- Action button -->
+                    <div class="d-flex flex-column gap-1">
+                        <a th:href="@{/locations/{id}(id=${alert.locationId})}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye me-1"></i>View
+                        </a>
+                        <a th:href="@{/events/new(locationId=${alert.locationId})}"
+                           class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-pencil-square me-1"></i>Update
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</main>
+
+<div th:replace="~{fragments/header :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmCA+GEexSqYF2JGVISMFHXtJJY"
+        crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: htmlHead(${pageTitle})}"></head>
+<body class="d-flex flex-column min-vh-100 bg-light">
+<div th:replace="~{fragments/header :: navbar}"></div>
+
+<main class="flex-grow-1 py-4">
+<div class="container" style="max-width: 720px;">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Record Parking Update</li>
+        </ol>
+    </nav>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white py-3">
+            <h1 class="h5 mb-0 fw-bold">
+                <i class="bi bi-pencil-square me-2"></i>Record Parking Update
+            </h1>
+        </div>
+        <div class="card-body p-4">
+
+            <!-- Error message -->
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <form th:action="@{/events}" method="post" id="event-form"
+                  th:object="${eventForm}" novalidate>
+
+                <!-- Validation errors -->
+                <div th:if="${#fields.hasAnyErrors()}"
+                     class="alert alert-danger mb-3">
+                    <strong>Errors found:</strong>
+                    <ul class="mb-0 mt-1">
+                        <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
+                    </ul>
+                </div>
+
+                <div class="row g-3">
+
+                    <!-- Parking Location -->
+                    <div class="col-12">
+                        <label for="parkingLocationId" class="form-label fw-semibold">
+                            Parking Location <span class="text-danger">*</span>
+                        </label>
+                        <select id="parkingLocationId" name="parkingLocationId"
+                                class="form-select" th:classappend="${#fields.hasErrors('parkingLocationId')} ? 'is-invalid'"
+                                required>
+                            <option value="">— Select a Parking Location —</option>
+                            <option th:each="loc : ${locations}"
+                                    th:value="${loc.id}"
+                                    th:text="${loc.name} + ' (' + ${loc.area} + ') — ' + ${loc.availableSpaces} + ' available'"
+                                    th:selected="${eventForm.parkingLocationId != null and eventForm.parkingLocationId == loc.id}">
+                            </option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('parkingLocationId')}"
+                             th:errors="*{parkingLocationId}"></div>
+                    </div>
+
+                    <!-- Event Type -->
+                    <div class="col-md-6">
+                        <label for="eventType" class="form-label fw-semibold">
+                            Event Type <span class="text-danger">*</span>
+                        </label>
+                        <select id="eventType" name="eventType"
+                                class="form-select" th:classappend="${#fields.hasErrors('eventType')} ? 'is-invalid'"
+                                required>
+                            <option value="">— Select Type —</option>
+                            <option th:each="type : ${eventTypes}"
+                                    th:value="${type}"
+                                    th:text="${type.toString().replace('_', ' ')}"
+                                    th:selected="${eventForm.eventType == type}">
+                            </option>
+                        </select>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('eventType')}"
+                             th:errors="*{eventType}"></div>
+                    </div>
+
+                    <!-- Occupancy -->
+                    <div class="col-md-6">
+                        <label for="reportedOccupancy" class="form-label fw-semibold">
+                            Reported Occupancy <span class="text-danger">*</span>
+                        </label>
+                        <input type="number" id="reportedOccupancy" name="reportedOccupancy"
+                               th:field="*{reportedOccupancy}"
+                               class="form-control" th:classappend="${#fields.hasErrors('reportedOccupancy')} ? 'is-invalid'"
+                               min="0" required
+                               placeholder="Current number of occupied spaces"/>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('reportedOccupancy')}"
+                             th:errors="*{reportedOccupancy}"></div>
+                        <div class="form-text text-muted">Must be ≥ 0 and ≤ the location's total capacity.</div>
+                    </div>
+
+                    <!-- Operator -->
+                    <div class="col-md-6">
+                        <label for="operatorName" class="form-label fw-semibold">Operator Name</label>
+                        <input type="text" id="operatorName" name="operatorName"
+                               th:field="*{operatorName}"
+                               class="form-control" maxlength="100"
+                               placeholder="Optional: operator or staff name"/>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12">
+                        <label for="description" class="form-label fw-semibold">Notes / Description</label>
+                        <textarea id="description" name="description"
+                                  th:field="*{description}"
+                                  class="form-control" rows="2" maxlength="500"
+                                  placeholder="Optional description of the event"></textarea>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="col-12 d-flex gap-2 justify-content-end border-top pt-3 mt-2">
+                        <a th:href="@{/}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success" id="btn-submit-event">
+                            <i class="bi bi-check-circle me-1"></i>Record Update
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</main>
+
+<div th:replace="~{fragments/header :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmCA+GEexSqYF2JGVISMFHXtJJY"
+        crossorigin="anonymous"></script>
+</body>
+</html>
