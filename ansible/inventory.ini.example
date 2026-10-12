@@ -1,0 +1,27 @@
+# =============================================================================
+# Ansible Inventory Example
+# Public Parking Dashboard
+#
+# IMPORTANT: This is an EXAMPLE file.
+# Copy this to inventory.ini and fill in real host details.
+# Never commit real server IPs, passwords, or private key paths to Git.
+# =============================================================================
+
+[parking_servers]
+# Replace <SERVER_IP_OR_HOSTNAME> with your actual server address
+# parking-prod ansible_host=<SERVER_IP_OR_HOSTNAME> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/parking-key.pem
+
+# For local WSL2 testing (Ubuntu WSL):
+# parking-local ansible_host=127.0.0.1 ansible_port=22 ansible_user=ubuntu
+
+# Example with password (use ansible-vault for security):
+# parking-test ansible_host=192.168.1.100 ansible_user=ubuntu ansible_password=<VAULT_ENCRYPTED>
+
+[parking_servers:vars]
+# Override group vars here if needed for specific hosts
+# app_port=8080
+# app_version=1.0.0
+
+[all:vars]
+# Common variables for all hosts
+ansible_python_interpreter=/usr/bin/python3

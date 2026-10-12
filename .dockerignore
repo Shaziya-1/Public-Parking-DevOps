@@ -1,0 +1,48 @@
+# Docker ignore file - exclude build artifacts and sensitive files from image context
+
+# Version control
+.git
+.gitignore
+
+# IDE and editor files
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Maven build artifacts (built inside Docker)
+target/
+
+# Local H2 database (not included in image)
+data/
+
+# Documentation (not needed in production image)
+docs/
+*.md
+!README.md
+
+# Test files
+src/test/
+
+# Ansible and scripts (infrastructure, not app)
+ansible/
+scripts/
+
+# Docker files themselves
+Dockerfile
+docker/
+.dockerignore
+
+# Log files
+*.log
+logs/
+
+# Environment-specific configs
+*.env
+.env*
+
+# Jenkins
+Jenkinsfile

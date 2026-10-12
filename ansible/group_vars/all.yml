@@ -1,0 +1,43 @@
+---
+# =============================================================================
+# Ansible Group Variables - all hosts
+# Public Parking Dashboard
+# Student: Sajiya Shaikh | Roll: 24102A2005
+#
+# IMPORTANT: Do NOT store real passwords, tokens, or private keys in this file.
+# Use ansible-vault for sensitive values.
+# =============================================================================
+
+# ── Application Identity ──────────────────────────────────────────────────────
+app_name: "public-parking-dashboard"
+app_version: "1.0.0"
+
+# ── Network Configuration ─────────────────────────────────────────────────────
+app_port: 8080
+
+# ── Application Directories ───────────────────────────────────────────────────
+app_dir:        "/opt/parking-dashboard"
+app_data_dir:   "/opt/parking-dashboard/data"
+app_log_dir:    "/opt/parking-dashboard/logs"
+app_config_dir: "/opt/parking-dashboard/config"
+
+# ── System User ────────────────────────────────────────────────────────────────
+app_user: "parking"
+
+# ── Docker Configuration ───────────────────────────────────────────────────────
+# Set docker_registry to your Docker Hub username or registry URL.
+# Leave blank to use locally-built images.
+docker_registry: ""
+docker_image_name: "{{ docker_registry != '' | ternary(docker_registry + '/' + app_name, app_name) }}"
+docker_volume_name: "parking-data"
+container_name: "{{ app_name }}-container"
+docker_force_pull: false
+
+# ── Parking Application Settings ──────────────────────────────────────────────
+# These match the application.properties parking.* keys
+low_availability_threshold: 85
+stale_threshold_minutes: 60
+
+# ── Health Check Settings ──────────────────────────────────────────────────────
+health_check_retries: 12
+health_check_delay: 10

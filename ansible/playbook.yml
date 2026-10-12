@@ -1,0 +1,240 @@
+---
+# =============================================================================
+# Ansible Playbook: Public Parking Dashboard Provisioning
+# Student: Sajiya Shaikh | Roll: 24102A2005
+#
+# Provisions and deploys the Public Parking Dashboard on a Linux host (Ubuntu).
+# Designed to be idempotent: running it multiple times produces the same result.
+#
+# Usage:
+#   ansible-playbook -i inventory.ini playbook.yml
+#   ansible-playbook -i inventory.ini playbook.yml --tags docker
+#   ansible-playbook -i inventory.ini playbook.yml -e "app_version=1.0.0-42"
+# =============================================================================
+
+- name: Provision and Deploy Public Parking Dashboard
+  hosts: parking_servers
+  become: true
+  gather_facts: true
+
+  vars_files:
+    - group_vars/all.yml
+
+  # ── Pre-flight checks ────────────────────────────────────────────────────────
+  pre_tasks:
+    - name: Verify OS family is Debian/Ubuntu
+      ansible.builtin.assert:
+        that:
+          - ansible_os_family == "Debian"
+        fail_msg: "This playbook is designed for Debian/Ubuntu hosts."
+        success_msg: "OS check passed: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+
+    - name: Update apt cache (if older than 1 hour)
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+  # ── Tasks ─────────────────────────────────────────────────────────────────────
+  tasks:
+
+    # ── System prerequisites ───────────────────────────────────────────────────
+    - name: Install required system packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - wget
+          - ca-certificates
+          - gnupg
+          - lsb-release
+          - apt-transport-https
+          - software-properties-common
+          - python3-pip
+        state: present
+      tags: packages
+
+    # ── Docker Installation ────────────────────────────────────────────────────
+    - name: Create Docker GPG key directory
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+      tags: docker
+
+    - name: Add Docker official GPG key
+      ansible.builtin.shell: |
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+        gpg --dearmor -o /etc/apt/keyrings/docker.gpg --batch --yes
+      args:
+        creates: /etc/apt/keyrings/docker.gpg
+      tags: docker
+
+    - name: Add Docker apt repository
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ ansible_architecture | replace('x86_64', 'amd64') }}
+          signed-by=/etc/apt/keyrings/docker.gpg]
+          https://download.docker.com/linux/ubuntu
+          {{ ansible_distribution_release }} stable
+        filename: docker
+        state: present
+      tags: docker
+
+    - name: Install Docker Engine
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: yes
+      tags: docker
+
+    - name: Ensure Docker service is started and enabled
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+      tags: docker
+
+    # ── Application User ────────────────────────────────────────────────────────
+    - name: Create parking application system user
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        system: true
+        shell: /bin/bash
+        groups: docker
+        append: true
+        create_home: true
+        comment: "Public Parking Dashboard service account"
+      tags: user
+
+    # ── Application Directories ─────────────────────────────────────────────────
+    - name: Create application directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0755'
+      loop:
+        - "{{ app_dir }}"
+        - "{{ app_data_dir }}"
+        - "{{ app_log_dir }}"
+        - "{{ app_config_dir }}"
+      tags: directories
+
+    # ── Application Configuration ───────────────────────────────────────────────
+    - name: Deploy application environment configuration
+      ansible.builtin.template:
+        src: templates/app.env.j2
+        dest: "{{ app_config_dir }}/app.env"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0600'
+      tags: config
+      when: lookup('ansible.builtin.first_found',
+                   ['templates/app.env.j2'], errors='ignore') is not none
+
+    - name: Create default app.env (if template not available)
+      ansible.builtin.copy:
+        dest: "{{ app_config_dir }}/app.env"
+        content: |
+          APP_PORT={{ app_port }}
+          LOW_AVAILABILITY_THRESHOLD={{ low_availability_threshold }}
+          STALE_THRESHOLD_MINUTES={{ stale_threshold_minutes }}
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: '0600'
+        force: false
+      tags: config
+
+    # ── Docker Volume ────────────────────────────────────────────────────────────
+    - name: Create Docker volume for persistent parking data
+      community.docker.docker_volume:
+        name: "{{ docker_volume_name }}"
+        state: present
+      tags: docker
+
+    # ── Docker Image Pull ────────────────────────────────────────────────────────
+    - name: Pull parking dashboard Docker image
+      community.docker.docker_image:
+        name: "{{ docker_image_name }}"
+        tag: "{{ app_version }}"
+        source: pull
+        force_source: "{{ docker_force_pull | default(false) }}"
+      when: docker_registry != ''
+      tags: deploy
+
+    # ── Stop old container ───────────────────────────────────────────────────────
+    - name: Stop and remove existing container (if present)
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: absent
+        force_kill: true
+      tags: deploy
+
+    # ── Deploy Container ─────────────────────────────────────────────────────────
+    - name: Start parking dashboard container
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ docker_image_name }}:{{ app_version }}"
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "{{ app_port }}:8080"
+        volumes:
+          - "{{ docker_volume_name }}:/app/data"
+          - "{{ app_log_dir }}:/app/logs"
+        env:
+          APP_PORT: "{{ app_port | string }}"
+          LOW_AVAILABILITY_THRESHOLD: "{{ low_availability_threshold | string }}"
+          STALE_THRESHOLD_MINUTES: "{{ stale_threshold_minutes | string }}"
+        labels:
+          app: "{{ app_name }}"
+          version: "{{ app_version }}"
+          managed-by: ansible
+      tags: deploy
+
+    # ── Firewall ─────────────────────────────────────────────────────────────────
+    - name: Allow application port through UFW firewall
+      community.general.ufw:
+        rule: allow
+        port: "{{ app_port }}"
+        proto: tcp
+        comment: "Public Parking Dashboard"
+      tags: firewall
+      ignore_errors: true  # UFW may not be installed on all hosts
+
+    # ── Health Check ─────────────────────────────────────────────────────────────
+    - name: Wait for application to become healthy
+      ansible.builtin.uri:
+        url: "http://localhost:{{ app_port }}/api/v1/health"
+        status_code: 200
+        timeout: 10
+      register: health_check
+      retries: 12
+      delay: 10
+      until: health_check.status == 200
+      tags: healthcheck
+
+    - name: Report deployment result
+      ansible.builtin.debug:
+        msg: >
+          Deployment SUCCESSFUL.
+          Application is healthy at http://{{ ansible_host }}:{{ app_port }}
+          Version: {{ app_version }}
+      when: health_check.status == 200
+      tags: healthcheck
+
+  # ── Post-tasks ───────────────────────────────────────────────────────────────
+  post_tasks:
+    - name: Display container status
+      ansible.builtin.shell: "docker ps --filter name={{ container_name }} --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
+      register: container_status
+      changed_when: false
+
+    - name: Show container status
+      ansible.builtin.debug:
+        var: container_status.stdout_lines
