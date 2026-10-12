@@ -1,0 +1,39 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE & Editor files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs and runtime data
+*.log
+logs/
+data/
+
+# Test screenshots and reports
+screenshots/
+test-reports/
+surefire-reports/
+
+# Ansible local inventory and keys
+ansible/inventory.ini
+ansible/*.retry
+*.pem
+*.key
