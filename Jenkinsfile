@@ -15,9 +15,9 @@ pipeline {
         APP_NAME        = 'public-parking-dashboard'
         APP_VERSION     = '1.0.0'
         APP_PORT        = "${params.APP_PORT ?: '8080'}"
-        IMAGE_NAME      = "${params.DOCKER_REGISTRY ? params.DOCKER_REGISTRY + '/' : ''}${APP_NAME}"
-        IMAGE_TAG       = "${APP_VERSION}-${BUILD_NUMBER}"
-        CONTAINER_NAME  = "${APP_NAME}-container"
+        IMAGE_NAME      = "${params.DOCKER_REGISTRY ? params.DOCKER_REGISTRY + '/' : ''}public-parking-dashboard"
+        IMAGE_TAG       = "1.0.0-${BUILD_NUMBER}"
+        CONTAINER_NAME  = 'public-parking-dashboard-container'
         LOW_AVAILABILITY_THRESHOLD = "${params.LOW_AVAILABILITY_THRESHOLD ?: '85'}"
 
         // Docker Hub credentials ID (configured in Jenkins Credentials Store)
@@ -51,6 +51,7 @@ pipeline {
 
     // ── Pipeline Options ──────────────────────────────────────────────────────
     options {
+        skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '10'))
         timeout(time: 30, unit: 'MINUTES')
         timestamps()
@@ -61,7 +62,7 @@ pipeline {
         // ── Stage 1: Checkout ─────────────────────────────────────────────────
         stage('Checkout') {
             steps {
-                echo "=== [1/9] Checkout: ${APP_NAME} ==="
+                echo "=== [1/9] Checkout: ${env.APP_NAME} ==="
                 checkout scm
                 script {
                     def commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
@@ -116,7 +117,7 @@ pipeline {
                 sh './mvnw package -DskipTests -B -q'
                 archiveArtifacts artifacts: 'target/*.jar',
                                  fingerprint: true
-                echo "Artifact archived: target/${APP_NAME}-${APP_VERSION}.jar"
+                echo "Artifact archived: target/${env.APP_NAME}-${env.APP_VERSION}.jar"
             }
         }
 
@@ -129,14 +130,14 @@ pipeline {
                 echo '=== [6/9] Selenium E2E Tests ==='
                 // Start app in background for Selenium
                 sh """
-                    java -jar target/${APP_NAME}-${APP_VERSION}.jar \
-                         --server.port=${APP_PORT} &
+                    java -jar target/${env.APP_NAME}-${env.APP_VERSION}.jar \
+                         --server.port=${env.APP_PORT} &
                     echo \$! > /tmp/parking-app.pid
                     sleep 30  # Wait for application to start
                 """
                 sh """
                     mvn test -Dtest=ParkingDashboardSeleniumTest \
-                             -Dapp.base.url=http://localhost:${APP_PORT} \
+                             -Dapp.base.url=http://localhost:${env.APP_PORT} \
                              -Dselenium.headless=true -B || true
                 """
             }
@@ -154,14 +155,14 @@ pipeline {
         // ── Stage 7: Docker Build ─────────────────────────────────────────────
         stage('Docker Build') {
             steps {
-                echo "=== [7/9] Docker Image Build: ${IMAGE_NAME}:${IMAGE_TAG} ==="
+                echo "=== [7/9] Docker Image Build: ${env.IMAGE_NAME}:${env.IMAGE_TAG} ==="
                 sh """
                     docker build \
-                        -t ${IMAGE_NAME}:${IMAGE_TAG} \
-                        -t ${IMAGE_NAME}:latest \
+                        -t ${env.IMAGE_NAME}:${env.IMAGE_TAG} \
+                        -t ${env.IMAGE_NAME}:latest \
                         .
                 """
-                sh "docker images | grep ${APP_NAME}"
+                sh "docker images | grep ${env.APP_NAME}"
             }
         }
 
@@ -171,17 +172,17 @@ pipeline {
                 expression { params.PUSH_IMAGE == true && params.DOCKER_REGISTRY != '' }
             }
             steps {
-                echo "=== [8/9] Push to Registry: ${DOCKER_REGISTRY} ==="
+                echo "=== [8/9] Push to Registry: ${params.DOCKER_REGISTRY} ==="
                 withCredentials([usernamePassword(
-                        credentialsId: "${DOCKER_CREDENTIALS_ID}",
+                        credentialsId: "${env.DOCKER_CREDENTIALS_ID}",
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                    sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${IMAGE_NAME}:latest"
+                    sh "docker push ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                    sh "docker push ${env.IMAGE_NAME}:latest"
                     sh 'docker logout'
                 }
-                echo "Pushed: ${IMAGE_NAME}:${IMAGE_TAG}"
+                echo "Pushed: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
             }
         }
 
@@ -192,32 +193,32 @@ pipeline {
                 script {
                     if (params.ROLLBACK_TAG) {
                         echo "ROLLBACK requested to tag: ${params.ROLLBACK_TAG}"
-                        sh "docker stop ${CONTAINER_NAME} 2>/dev/null || true"
-                        sh "docker rm ${CONTAINER_NAME} 2>/dev/null || true"
+                        sh "docker stop ${env.CONTAINER_NAME} 2>/dev/null || true"
+                        sh "docker rm ${env.CONTAINER_NAME} 2>/dev/null || true"
                         sh """
                             docker run -d \
-                                --name ${CONTAINER_NAME} \
-                                -p ${APP_PORT}:8080 \
+                                --name ${env.CONTAINER_NAME} \
+                                -p ${env.APP_PORT}:8080 \
                                 -v parking-data:/app/data \
-                                -e LOW_AVAILABILITY_THRESHOLD=${LOW_AVAILABILITY_THRESHOLD} \
-                                ${IMAGE_NAME}:${params.ROLLBACK_TAG}
+                                -e LOW_AVAILABILITY_THRESHOLD=${env.LOW_AVAILABILITY_THRESHOLD} \
+                                ${env.IMAGE_NAME}:${params.ROLLBACK_TAG}
                         """
                     } else {
                         // Stop old container safely before deploying new one
-                        sh "docker stop ${CONTAINER_NAME} 2>/dev/null || true"
-                        sh "docker rm ${CONTAINER_NAME} 2>/dev/null || true"
+                        sh "docker stop ${env.CONTAINER_NAME} 2>/dev/null || true"
+                        sh "docker rm ${env.CONTAINER_NAME} 2>/dev/null || true"
                         sh """
                             docker run -d \
-                                --name ${CONTAINER_NAME} \
-                                -p ${APP_PORT}:8080 \
+                                --name ${env.CONTAINER_NAME} \
+                                -p ${env.APP_PORT}:8080 \
                                 -v parking-data:/app/data \
-                                -e LOW_AVAILABILITY_THRESHOLD=${LOW_AVAILABILITY_THRESHOLD} \
+                                -e LOW_AVAILABILITY_THRESHOLD=${env.LOW_AVAILABILITY_THRESHOLD} \
                                 --restart unless-stopped \
-                                ${IMAGE_NAME}:${IMAGE_TAG}
+                                ${env.IMAGE_NAME}:${env.IMAGE_TAG}
                         """
                     }
                 }
-                echo "Container started: ${CONTAINER_NAME}"
+                echo "Container started: ${env.CONTAINER_NAME}"
             }
         }
 
@@ -229,22 +230,35 @@ pipeline {
             echo """
             ╔════════════════════════════════════════════╗
             ║   BUILD AND DEPLOYMENT SUCCESSFUL          ║
-            ║   App: ${APP_NAME}:${IMAGE_TAG}            ║
-            ║   Port: ${APP_PORT}                        ║
-            ║   URL:  http://localhost:${APP_PORT}        ║
+            ║   App: ${env.APP_NAME}:${env.IMAGE_TAG}    ║
+            ║   Port: ${env.APP_PORT}                    ║
+            ║   URL:  http://localhost:${env.APP_PORT}    ║
             ╚════════════════════════════════════════════╝
             """
         }
         failure {
             echo "!!! Pipeline FAILED. Review logs above. Container NOT deployed with broken code."
-            sh "docker logs ${CONTAINER_NAME} 2>/dev/null | tail -20 || true"
+            script {
+                try {
+                    def container = env.CONTAINER_NAME ?: 'public-parking-dashboard-container'
+                    sh "docker logs ${container} 2>/dev/null | tail -20 || true"
+                } catch (Throwable t) {
+                    echo "Container inspection skipped: ${t.message}"
+                }
+            }
         }
         always {
-            cleanWs(cleanWhenNotBuilt: false,
-                    deleteDirs: true,
-                    disableDeferredWipeout: true,
-                    notFailBuild: true,
-                    patterns: [[pattern: 'target/', type: 'INCLUDE']])
+            script {
+                try {
+                    cleanWs(cleanWhenNotBuilt: false,
+                            deleteDirs: true,
+                            disableDeferredWipeout: true,
+                            notFailBuild: true,
+                            patterns: [[pattern: 'target/', type: 'INCLUDE']])
+                } catch (Throwable t) {
+                    echo "Workspace cleanup skipped: ${t.message}"
+                }
+            }
         }
     }
 }
