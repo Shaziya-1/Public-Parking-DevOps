@@ -14,11 +14,13 @@ pipeline {
     environment {
         APP_NAME        = 'public-parking-dashboard'
         APP_VERSION     = '1.0.0'
-        APP_PORT        = "${params.APP_PORT ?: '8080'}"
+        APP_PORT        = "${params.APP_PORT ?: '8085'}"
         IMAGE_NAME      = "${params.DOCKER_REGISTRY ? params.DOCKER_REGISTRY + '/' : ''}public-parking-dashboard"
         IMAGE_TAG       = "1.0.0-${BUILD_NUMBER}"
         CONTAINER_NAME  = 'public-parking-dashboard-container'
         LOW_AVAILABILITY_THRESHOLD = "${params.LOW_AVAILABILITY_THRESHOLD ?: '85'}"
+
+        PATH = "C:\\Users\\Admin\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin;C:\\Program Files\\Git\\bin;C:\\Program Files\\Git\\usr\\bin;${env.PATH}"
 
         // Docker Hub credentials ID (configured in Jenkins Credentials Store)
         // NEVER hardcode credentials here
@@ -30,7 +32,7 @@ pipeline {
     // ── Build Parameters ──────────────────────────────────────────────────────
     parameters {
         string(name: 'APP_PORT',
-               defaultValue: '8080',
+               defaultValue: '8085',
                description: 'Port on which the application will listen')
         string(name: 'DOCKER_REGISTRY',
                defaultValue: '',
