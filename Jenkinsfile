@@ -67,7 +67,12 @@ pipeline {
                 echo "=== [1/9] Checkout: ${env.APP_NAME} ==="
                 checkout scm
                 script {
-                    def commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    def commitId = ''
+                    if (isUnix()) {
+                        commitId = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    } else {
+                        commitId = bat(script: '@git rev-parse --short HEAD', returnStdout: true).trim()
+                    }
                     env.GIT_COMMIT_SHORT = commitId
                     echo "Commit: ${commitId}"
                 }
@@ -78,11 +83,19 @@ pipeline {
         stage('Environment Check') {
             steps {
                 echo '=== [2/9] Environment Check ==='
-                sh 'java -version'
-                sh 'mvn -version 2>/dev/null || ./mvnw -version'
-                sh 'docker --version || echo "Docker not available on this agent"'
-                sh 'echo "Branch: ${GIT_BRANCH:-unknown}"'
-                sh 'echo "Build #: ${BUILD_NUMBER}"'
+                script {
+                    if (isUnix()) {
+                        sh 'java -version'
+                        sh 'mvn -version 2>/dev/null || ./mvnw -version'
+                        sh 'docker --version || echo "Docker not available on this agent"'
+                    } else {
+                        bat 'java -version'
+                        bat 'call mvnw.cmd -version'
+                        bat 'docker --version'
+                    }
+                    echo "Branch: ${env.GIT_BRANCH ?: 'master'}"
+                    echo "Build #: ${env.BUILD_NUMBER}"
+                }
             }
         }
 
@@ -90,7 +103,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== [3/9] Maven Build (compile) ==='
-                sh './mvnw clean compile -B -q'
+                script {
+                    if (isUnix()) {
+                        sh './mvnw clean compile -B -q'
+                    } else {
+                        bat 'call mvnw.cmd clean compile -B -q'
+                    }
+                }
             }
         }
 
@@ -98,11 +117,16 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 echo '=== [4/9] Unit & Integration Tests ==='
-                sh './mvnw test -B'
+                script {
+                    if (isUnix()) {
+                        sh './mvnw test -B'
+                    } else {
+                        bat 'call mvnw.cmd test -B'
+                    }
+                }
             }
             post {
                 always {
-                    // Publish JUnit test reports
                     junit testResults: 'target/surefire-reports/*.xml',
                           allowEmptyResults: true
                 }
@@ -116,7 +140,13 @@ pipeline {
         stage('Package') {
             steps {
                 echo '=== [5/9] Package (JAR) ==='
-                sh './mvnw package -DskipTests -B -q'
+                script {
+                    if (isUnix()) {
+                        sh './mvnw package -DskipTests -B -q'
+                    } else {
+                        bat 'call mvnw.cmd package -DskipTests -B -q'
+                    }
+                }
                 archiveArtifacts artifacts: 'target/*.jar',
                                  fingerprint: true
                 echo "Artifact archived: target/${env.APP_NAME}-${env.APP_VERSION}.jar"
@@ -130,22 +160,28 @@ pipeline {
             }
             steps {
                 echo '=== [6/9] Selenium E2E Tests ==='
-                // Start app in background for Selenium
-                sh """
-                    java -jar target/${env.APP_NAME}-${env.APP_VERSION}.jar \
-                         --server.port=${env.APP_PORT} &
-                    echo \$! > /tmp/parking-app.pid
-                    sleep 30  # Wait for application to start
-                """
-                sh """
-                    mvn test -Dtest=ParkingDashboardSeleniumTest \
-                             -Dapp.base.url=http://localhost:${env.APP_PORT} \
-                             -Dselenium.headless=true -B || true
-                """
+                script {
+                    if (isUnix()) {
+                        sh """
+                            java -jar target/${env.APP_NAME}-${env.APP_VERSION}.jar --server.port=${env.APP_PORT} &
+                            echo \$! > /tmp/parking-app.pid
+                            sleep 20
+                            ./mvnw test -Dtest=ParkingDashboardSeleniumTest -Dapp.base.url=http://localhost:${env.APP_PORT} -Dselenium.headless=true -B || true
+                        """
+                    } else {
+                        bat """
+                            call mvnw.cmd test -Dtest=ParkingDashboardSeleniumTest -Dapp.base.url=http://localhost:${env.APP_PORT} -B
+                        """
+                    }
+                }
             }
             post {
                 always {
-                    sh 'kill $(cat /tmp/parking-app.pid) 2>/dev/null || true'
+                    script {
+                        if (isUnix()) {
+                            sh 'kill $(cat /tmp/parking-app.pid) 2>/dev/null || true'
+                        }
+                    }
                     junit testResults: 'target/surefire-reports/TEST-*Selenium*.xml',
                           allowEmptyResults: true
                     archiveArtifacts artifacts: 'target/selenium-screenshots/**',
@@ -158,13 +194,22 @@ pipeline {
         stage('Docker Build') {
             steps {
                 echo "=== [7/9] Docker Image Build: ${env.IMAGE_NAME}:${env.IMAGE_TAG} ==="
-                sh """
-                    docker build \
-                        -t ${env.IMAGE_NAME}:${env.IMAGE_TAG} \
-                        -t ${env.IMAGE_NAME}:latest \
-                        .
-                """
-                sh "docker images | grep ${env.APP_NAME}"
+                script {
+                    if (isUnix()) {
+                        sh """
+                            docker build \
+                                -t ${env.IMAGE_NAME}:${env.IMAGE_TAG} \
+                                -t ${env.IMAGE_NAME}:latest \
+                                .
+                        """
+                        sh "docker images | grep ${env.APP_NAME}"
+                    } else {
+                        bat """
+                            docker build -t ${env.IMAGE_NAME}:${env.IMAGE_TAG} -t ${env.IMAGE_NAME}:latest .
+                        """
+                        bat "docker images"
+                    }
+                }
             }
         }
 
@@ -179,10 +224,21 @@ pipeline {
                         credentialsId: "${env.DOCKER_CREDENTIALS_ID}",
                         usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_PASS')]) {
-                    sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
-                    sh "docker push ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
-                    sh "docker push ${env.IMAGE_NAME}:latest"
-                    sh 'docker logout'
+                    script {
+                        if (isUnix()) {
+                            sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
+                            sh "docker push ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                            sh "docker push ${env.IMAGE_NAME}:latest"
+                            sh 'docker logout'
+                        } else {
+                            bat """
+                                echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                                docker push ${env.IMAGE_NAME}:${env.IMAGE_TAG}
+                                docker push ${env.IMAGE_NAME}:latest
+                                docker logout
+                            """
+                        }
+                    }
                 }
                 echo "Pushed: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
             }
@@ -193,34 +249,27 @@ pipeline {
             steps {
                 echo "=== [9/9] Container Deployment ==="
                 script {
-                    if (params.ROLLBACK_TAG) {
-                        echo "ROLLBACK requested to tag: ${params.ROLLBACK_TAG}"
+                    def deployTag = params.ROLLBACK_TAG ? params.ROLLBACK_TAG : env.IMAGE_TAG
+                    if (isUnix()) {
                         sh "docker stop ${env.CONTAINER_NAME} 2>/dev/null || true"
                         sh "docker rm ${env.CONTAINER_NAME} 2>/dev/null || true"
                         sh """
                             docker run -d \
                                 --name ${env.CONTAINER_NAME} \
                                 -p ${env.APP_PORT}:8080 \
-                                -v parking-data:/app/data \
-                                -e LOW_AVAILABILITY_THRESHOLD=${env.LOW_AVAILABILITY_THRESHOLD} \
-                                ${env.IMAGE_NAME}:${params.ROLLBACK_TAG}
-                        """
-                    } else {
-                        // Stop old container safely before deploying new one
-                        sh "docker stop ${env.CONTAINER_NAME} 2>/dev/null || true"
-                        sh "docker rm ${env.CONTAINER_NAME} 2>/dev/null || true"
-                        sh """
-                            docker run -d \
-                                --name ${env.CONTAINER_NAME} \
-                                -p ${env.APP_PORT}:8080 \
-                                -v parking-data:/app/data \
                                 -e LOW_AVAILABILITY_THRESHOLD=${env.LOW_AVAILABILITY_THRESHOLD} \
                                 --restart unless-stopped \
-                                ${env.IMAGE_NAME}:${env.IMAGE_TAG}
+                                ${env.IMAGE_NAME}:${deployTag}
+                        """
+                    } else {
+                        bat """
+                            docker stop ${env.CONTAINER_NAME} 2>NUL || ver >NUL
+                            docker rm ${env.CONTAINER_NAME} 2>NUL || ver >NUL
+                            docker run -d --name ${env.CONTAINER_NAME} -p ${env.APP_PORT}:8080 -e LOW_AVAILABILITY_THRESHOLD=${env.LOW_AVAILABILITY_THRESHOLD} --restart unless-stopped ${env.IMAGE_NAME}:${deployTag}
                         """
                     }
                 }
-                echo "Container started: ${env.CONTAINER_NAME}"
+                echo "Container started: ${env.CONTAINER_NAME} on port ${env.APP_PORT}"
             }
         }
 
@@ -243,7 +292,11 @@ pipeline {
             script {
                 try {
                     def container = env.CONTAINER_NAME ?: 'public-parking-dashboard-container'
-                    sh "docker logs ${container} 2>/dev/null | tail -20 || true"
+                    if (isUnix()) {
+                        sh "docker logs ${container} 2>/dev/null | tail -20 || true"
+                    } else {
+                        bat "docker logs ${container} 2>NUL || ver >NUL"
+                    }
                 } catch (Throwable t) {
                     echo "Container inspection skipped: ${t.message}"
                 }
@@ -264,3 +317,4 @@ pipeline {
         }
     }
 }
+
