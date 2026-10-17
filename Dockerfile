@@ -15,8 +15,8 @@ WORKDIR /build
 COPY .mvn/ .mvn/
 COPY mvnw mvnw.cmd pom.xml ./
 
-# Make mvnw executable
-RUN chmod +x ./mvnw
+# Fix potential Windows CRLF line endings on checkout and make mvnw executable
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw
 
 # Download dependencies (cached unless pom.xml changes)
 RUN ./mvnw dependency:go-offline -B -q
