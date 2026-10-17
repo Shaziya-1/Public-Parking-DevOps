@@ -9,8 +9,10 @@ services:
     image: parkwatch:latest
     container_name: parkwatch-app
     restart: unless-stopped
+    expose:
+      - "8080"
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - APP_PORT=8080
       - LOW_AVAILABILITY_THRESHOLD=85

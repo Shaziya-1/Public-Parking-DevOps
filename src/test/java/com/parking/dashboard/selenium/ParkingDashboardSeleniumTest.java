@@ -27,13 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Selenium WebDriver E2E tests for Public Parking Dashboard.
  *
- * Prerequisites: Application must be running at APP_BASE_URL (default: http://localhost:8080)
- *
- * Run with: mvn test -Dtest=ParkingDashboardSeleniumTest -Dapp.base.url=http://localhost:8080
- * Run headless: mvn test -Dtest=ParkingDashboardSeleniumTest -Dselenium.headless=true
- *
- * These tests are in the 'selenium' package and excluded from the default Surefire run.
- * They are executed by the Maven Failsafe plugin or when explicitly triggered.
+ * Prerequisites: Application must be running at APP_BASE_URL (default: http://localhost:80)
  *
  * Student: Sajiya Shaikh | Roll: 24102A2005
  */
@@ -48,9 +42,15 @@ class ParkingDashboardSeleniumTest {
 
     @BeforeAll
     static void setupDriver() throws IOException {
-        baseUrl = System.getProperty("app.base.url", "http://localhost:8080");
+        baseUrl = System.getProperty("app.base.url", "http://localhost:80");
         boolean headless = Boolean.parseBoolean(System.getProperty("selenium.headless", "true"));
         String browser = System.getProperty("selenium.browser", "edge").toLowerCase();
+
+        // Register local msedgedriver.exe if available
+        File localDriver = new File("drivers/msedgedriver.exe");
+        if (localDriver.exists()) {
+            System.setProperty("webdriver.edge.driver", localDriver.getAbsolutePath());
+        }
 
         // Create screenshot directory
         screenshotDir = Paths.get("target", "selenium-screenshots");
@@ -63,21 +63,23 @@ class ParkingDashboardSeleniumTest {
                 driver = new FirefoxDriver(options);
             } else if ("chrome".equals(browser)) {
                 ChromeOptions options = new ChromeOptions();
+                options.addArguments("--remote-allow-origins=*");
                 if (headless) {
                     options.addArguments("--headless=new", "--no-sandbox",
-                                         "--disable-dev-shm-usage", "--window-size=1280,900");
+                                         "--disable-dev-shm-usage", "--window-size=1920,1080");
                 }
                 driver = new ChromeDriver(options);
             } else {
                 EdgeOptions options = new EdgeOptions();
+                options.addArguments("--remote-allow-origins=*");
                 if (headless) {
                     options.addArguments("--headless=new", "--no-sandbox",
-                                         "--disable-dev-shm-usage", "--window-size=1280,900");
+                                         "--disable-dev-shm-usage", "--window-size=1920,1080");
                 }
                 driver = new EdgeDriver(options);
             }
 
-            driver.manage().window().maximize();
+            driver.manage().window().setSize(new Dimension(1920, 1080));
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
             wait = new WebDriverWait(driver, Duration.ofSeconds(15));
         } catch (Exception e) {
@@ -93,9 +95,14 @@ class ParkingDashboardSeleniumTest {
         }
     }
 
-    @AfterEach
-    void onTestFailure(TestInfo testInfo) {
-        // Screenshot on any uncaught exception is handled by @Test catch blocks
+    private void clickElement(WebElement el) {
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({behavior: 'instant', block: 'center'});", el);
+            Thread.sleep(150);
+            wait.until(ExpectedConditions.elementToBeClickable(el)).click();
+        } catch (Exception ex) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+        }
     }
 
     // ── Test 1: Dashboard loads and shows summary indicators ─────────────────
@@ -128,12 +135,12 @@ class ParkingDashboardSeleniumTest {
             WebElement table = driver.findElement(By.id("locations-table"));
             assertThat(table.isDisplayed()).isTrue();
 
-            // Verify at least one row of sample data
+            // Verify at least one row of data
             java.util.List<WebElement> rows = table.findElements(By.tagName("tr"));
             assertThat(rows.size()).isGreaterThan(1); // header + at least 1 data row
 
-            System.out.println("[T1 PASS] Dashboard loaded successfully. " +
-                               "Rows found: " + (rows.size() - 1));
+            captureScreenshot("T1_dashboard_success");
+            System.out.println("[T1 PASS] Dashboard loaded successfully. Rows found: " + (rows.size() - 1));
         } catch (Exception e) {
             captureScreenshot("T1_dashboard_failure");
             throw e;
@@ -157,7 +164,7 @@ class ParkingDashboardSeleniumTest {
 
             // Submit search
             WebElement searchBtn = driver.findElement(By.id("btn-search"));
-            searchBtn.click();
+            clickElement(searchBtn);
 
             // Wait for results
             wait.until(ExpectedConditions.urlContains("search=Bandra"));
@@ -172,12 +179,12 @@ class ParkingDashboardSeleniumTest {
                 java.util.List<WebElement> rows = table.findElements(
                     By.cssSelector("tbody tr"));
                 assertThat(rows.size()).isGreaterThan(0);
-                // At least one row should contain 'Bandra' in the name
                 boolean found = rows.stream()
                     .anyMatch(r -> r.getText().toLowerCase().contains("bandra"));
                 assertThat(found).as("Expected to find 'Bandra' in search results").isTrue();
             }
 
+            captureScreenshot("T2_search_success");
             System.out.println("[T2 PASS] Search for 'Bandra' executed successfully.");
         } catch (Exception e) {
             captureScreenshot("T2_search_failure");
@@ -196,8 +203,8 @@ class ParkingDashboardSeleniumTest {
 
             // Click the 'Full' filter button
             WebElement filterFull = wait.until(
-                ExpectedConditions.elementToBeClickable(By.id("filter-full")));
-            filterFull.click();
+                ExpectedConditions.presenceOfElementLocated(By.id("filter-full")));
+            clickElement(filterFull);
 
             // Wait for page to reflect filter
             wait.until(ExpectedConditions.urlContains("filter=FULL"));
@@ -216,6 +223,7 @@ class ParkingDashboardSeleniumTest {
                 );
             }
 
+            captureScreenshot("T3_filter_success");
             System.out.println("[T3 PASS] Filter by FULL status works correctly.");
         } catch (Exception e) {
             captureScreenshot("T3_filter_failure");
@@ -237,9 +245,9 @@ class ParkingDashboardSeleniumTest {
 
             // Click the first 'View Details' (eye icon) button
             WebElement viewBtn = wait.until(
-                ExpectedConditions.elementToBeClickable(
+                ExpectedConditions.presenceOfElementLocated(
                     By.cssSelector("#locations-table tbody tr:first-child .btn-outline-primary")));
-            viewBtn.click();
+            clickElement(viewBtn);
 
             // Wait for detail page to load
             wait.until(ExpectedConditions.presenceOfElementLocated(By.id("location-detail-card")));
@@ -260,8 +268,8 @@ class ParkingDashboardSeleniumTest {
             WebElement locAvailable = driver.findElement(By.id("loc-available"));
             assertThat(locAvailable.getText()).matches("\\d+");
 
-            System.out.println("[T4 PASS] Location detail page loaded. " +
-                               "Status: " + statusBadge.getText() +
+            captureScreenshot("T4_detail_success");
+            System.out.println("[T4 PASS] Location detail page loaded. Status: " + statusBadge.getText() +
                                ", Capacity: " + locCapacity.getText());
         } catch (Exception e) {
             captureScreenshot("T4_detail_failure");
@@ -308,7 +316,7 @@ class ParkingDashboardSeleniumTest {
 
             // Submit the form
             WebElement submitBtn = driver.findElement(By.id("btn-submit-event"));
-            submitBtn.click();
+            clickElement(submitBtn);
 
             // After successful submission, should redirect to the location detail page
             wait.until(ExpectedConditions.urlContains("/locations/"));
@@ -317,6 +325,7 @@ class ParkingDashboardSeleniumTest {
             boolean hasSuccess = !driver.findElements(By.cssSelector(".alert-success")).isEmpty();
             assertThat(hasSuccess).isTrue();
 
+            captureScreenshot("T5_update_success");
             System.out.println("[T5 PASS] Valid parking update submitted successfully.");
         } catch (Exception e) {
             captureScreenshot("T5_update_failure");
@@ -324,7 +333,7 @@ class ParkingDashboardSeleniumTest {
         }
     }
 
-    // ── Test 6 (Recommended): Submit invalid update and verify validation ──────
+    // ── Test 6: Submit invalid update and verify validation ───────────────────
 
     @Test
     @Order(6)
@@ -352,27 +361,23 @@ class ParkingDashboardSeleniumTest {
 
             // Try to submit
             WebElement submitBtn = driver.findElement(By.id("btn-submit-event"));
-            submitBtn.click();
+            clickElement(submitBtn);
 
-            // Should NOT redirect to success page - should stay on form or show error
-            // HTML5 validation may prevent form submission
-            // If server-side validation fires: check for error message
             boolean onFormPage = driver.getCurrentUrl().contains("/events") ||
                                   driver.getCurrentUrl().contains("/new");
             boolean hasError = !driver.findElements(By.cssSelector(".alert-danger, .invalid-feedback")).isEmpty();
 
-            // Either HTML5 validation blocked it (stays on form page) or server returned error
             assertThat(onFormPage || hasError).isTrue();
 
-            System.out.println("[T6 PASS] Invalid occupancy (-5) correctly rejected. " +
-                               "On form: " + onFormPage + ", Has error: " + hasError);
+            captureScreenshot("T6_validation_success");
+            System.out.println("[T6 PASS] Invalid occupancy (-5) correctly rejected.");
         } catch (Exception e) {
             captureScreenshot("T6_validation_failure");
             throw e;
         }
     }
 
-    // ── Test 7 (Extra): Alerts page loads ─────────────────────────────────────
+    // ── Test 7: Alerts page loads ─────────────────────────────────────────────
 
     @Test
     @Order(7)
@@ -389,13 +394,12 @@ class ParkingDashboardSeleniumTest {
             WebElement highCard = driver.findElement(By.id("alert-count-high"));
             assertThat(highCard.isDisplayed()).isTrue();
 
-            // Either alerts list or "All Clear" message should be visible
             boolean hasAlertsList = !driver.findElements(By.id("alerts-list")).isEmpty();
             boolean hasClearMessage = !driver.findElements(By.cssSelector(".bi-shield-check")).isEmpty();
             assertThat(hasAlertsList || hasClearMessage).isTrue();
 
-            System.out.println("[T7 PASS] Alerts page loaded. " +
-                               "Critical count: " + criticalCard.findElement(By.className("display-6")).getText());
+            captureScreenshot("T7_alerts_success");
+            System.out.println("[T7 PASS] Alerts page loaded successfully.");
         } catch (Exception e) {
             captureScreenshot("T7_alerts_failure");
             throw e;

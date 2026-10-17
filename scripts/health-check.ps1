@@ -5,88 +5,90 @@
 #
 # Usage:
 #   .\scripts\health-check.ps1
-#   .\scripts\health-check.ps1 -AppUrl "http://localhost:8080" -MaxRetries 5
+#   .\scripts\health-check.ps1 -AppUrl "http://localhost:80" -MaxRetries 5
 # =============================================================================
 
 param(
-    [string]$AppUrl = "http://localhost:8080",
+    [string]$AppUrl = "http://localhost:80",
+    [int]$Port = 0,
     [int]$MaxRetries = 10,
-    [int]$RetryDelaySeconds = 5
+    [int]$RetryDelaySeconds = 3
 )
+
+if ($Port -gt 0) {
+    $AppUrl = "http://localhost:$Port"
+}
 
 $healthUrl = "$AppUrl/api/v1/health"
 $actuatorUrl = "$AppUrl/actuator/health"
 
 Write-Host ""
-Write-Host "╔══════════════════════════════════════════════════╗" -ForegroundColor Cyan
-Write-Host "║  ParkWatch - Application Health Check            ║" -ForegroundColor Cyan
-Write-Host "╚══════════════════════════════════════════════════╝" -ForegroundColor Cyan
+Write-Host "==================================================" -ForegroundColor Cyan
+Write-Host "  ParkWatch - Application Health Check" -ForegroundColor Cyan
+Write-Host "==================================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Target URL: $healthUrl" -ForegroundColor Yellow
+Write-Host "Target URL : $healthUrl" -ForegroundColor Yellow
+Write-Host "Actuator   : $actuatorUrl" -ForegroundColor Yellow
 Write-Host "Max Retries: $MaxRetries | Delay: ${RetryDelaySeconds}s"
 Write-Host ""
 
 $attempt = 0
 $healthy = $false
 
-while ($attempt -lt $MaxRetries -and -not $healthy) {
+while (($attempt -lt $MaxRetries) -and (-not $healthy)) {
     $attempt++
-    Write-Host "Attempt [$attempt/$MaxRetries] - Checking health..." -NoNewline
+    Write-Host "Attempt [$attempt/$MaxRetries] - Checking health... " -NoNewline
 
     try {
-        $response = Invoke-WebRequest -Uri $healthUrl -TimeoutSec 10 -ErrorAction Stop
-        if ($response.StatusCode -eq 200) {
-            $body = $response.Content | ConvertFrom-Json
-            Write-Host " ✅ UP" -ForegroundColor Green
+        $response = Invoke-RestMethod -Uri $healthUrl -TimeoutSec 10 -Method Get -ErrorAction Stop
+        if ($response -and $response.status -eq "UP") {
+            Write-Host "[OK] UP" -ForegroundColor Green
             Write-Host ""
-            Write-Host "── API Health ────────────────────────────────────" -ForegroundColor Green
-            Write-Host "  Status  : $($body.status)" -ForegroundColor Green
-            Write-Host "  Service : $($body.service)"
-            Write-Host "  Version : $($body.version)"
+            Write-Host "-- API Health Details ----------------------------" -ForegroundColor Green
+            Write-Host "  Status  : $($response.status)" -ForegroundColor Green
+            Write-Host "  Service : $($response.service)"
+            Write-Host "  Version : $($response.version)"
 
-            # Also check Spring Actuator
             try {
-                $actuator = Invoke-WebRequest -Uri $actuatorUrl -TimeoutSec 10 -ErrorAction Stop
-                $actuatorBody = $actuator.Content | ConvertFrom-Json
+                $actuator = Invoke-RestMethod -Uri $actuatorUrl -TimeoutSec 10 -Method Get -ErrorAction Stop
                 Write-Host ""
-                Write-Host "── Spring Actuator ───────────────────────────────" -ForegroundColor Green
-                Write-Host "  Health  : $($actuatorBody.status)" -ForegroundColor Green
+                Write-Host "-- Spring Actuator -------------------------------" -ForegroundColor Green
+                Write-Host "  Health  : $($actuator.status)" -ForegroundColor Green
+                if ($actuator.components) {
+                    Write-Host "  Database: $($actuator.components.db.status)"
+                    Write-Host "  Disk    : $($actuator.components.diskSpace.status)"
+                }
             } catch {
-                Write-Host "  Actuator endpoint not reachable (may be restricted)." -ForegroundColor Yellow
+                Write-Host "  Actuator endpoint unreachable or restricted: $($_.Exception.Message)" -ForegroundColor Yellow
             }
 
             $healthy = $true
+            break
+        } else {
+            Write-Host "[WARN] Unexpected response: $response" -ForegroundColor Yellow
         }
     } catch {
-        Write-Host " ❌ FAILED" -ForegroundColor Red
+        Write-Host "[FAILED]" -ForegroundColor Red
         Write-Host "  Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
 
-        if ($attempt -lt $MaxRetries) {
-            Write-Host "  Retrying in ${RetryDelaySeconds}s..." -ForegroundColor Yellow
-            Start-Sleep -Seconds $RetryDelaySeconds
-        }
+    if (-not $healthy -and ($attempt -lt $MaxRetries)) {
+        Write-Host "  Retrying in ${RetryDelaySeconds}s..." -ForegroundColor Yellow
+        Start-Sleep -Seconds $RetryDelaySeconds
     }
 }
 
 Write-Host ""
 if ($healthy) {
-    Write-Host "✅ Health check PASSED. Application is running at $AppUrl" -ForegroundColor Green
+    Write-Host "[SUCCESS] Health check PASSED. Application is running at $AppUrl" -ForegroundColor Green
     Write-Host ""
     Write-Host "Quick Links:" -ForegroundColor Cyan
     Write-Host "  Dashboard : $AppUrl/"
     Write-Host "  API Health: $healthUrl"
-    Write-Host "  Alerts    : $AppUrl/alerts"
-    Write-Host "  H2 Console: $AppUrl/h2-console"
+    Write-Host "  Actuator  : $actuatorUrl"
     exit 0
 } else {
-    Write-Host "❌ Health check FAILED after $MaxRetries attempts." -ForegroundColor Red
-    Write-Host "   Application may not be running or is not responding." -ForegroundColor Red
-    Write-Host ""
-    Write-Host "Troubleshooting:" -ForegroundColor Yellow
-    Write-Host "  1. Check if the application is running:"
-    Write-Host "     mvn spring-boot:run"
-    Write-Host "     OR: java -jar target\public-parking-dashboard-1.0.0.jar"
-    Write-Host "  2. Check Docker container: docker ps"
-    Write-Host "  3. Check logs: docker logs public-parking-dashboard-container"
+    Write-Host "[FAILED] Health check FAILED after $MaxRetries attempts." -ForegroundColor Red
+    Write-Host "Application may not be running or is not responding." -ForegroundColor Red
     exit 1
 }

@@ -37,3 +37,6 @@ ansible/inventory.ini
 ansible/*.retry
 *.pem
 *.key
+
+# WebDriver binaries
+drivers/
