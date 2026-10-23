@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Task 17 Dashboard Audit</title>
+    <style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    font-size: 13pt;
+}
+@media print {
+    body {
+        max-width: 100%;
+        padding: 0;
+        font-size: 11pt;
+    }
+    @page {
+        margin: 18mm 15mm 18mm 15mm;
+        size: A4 portrait;
+        @bottom-right {
+            content: counter(page);
+        }
+    }
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    table, pre, blockquote {
+        page-break-inside: avoid;
+    }
+}
+h1 {
+    font-size: 24pt;
+    border-bottom: 2px solid #0366d6;
+    padding-bottom: 8px;
+    color: #0366d6;
+    margin-top: 24px;
+}
+h2 {
+    font-size: 18pt;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 6px;
+    color: #24292e;
+    margin-top: 22px;
+}
+h3 {
+    font-size: 14pt;
+    color: #1b1f23;
+    margin-top: 18px;
+}
+h4 {
+    font-size: 12pt;
+    color: #24292e;
+    margin-top: 14px;
+}
+p, ul, ol {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+code {
+    background-color: #f6f8fa;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+    color: #d73a49;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 9.5pt;
+    line-height: 1.45;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+blockquote {
+    border-left: 4px solid #0366d6;
+    padding: 8px 16px;
+    color: #444d56;
+    background-color: #f1f8ff;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 10pt;
+}
+th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 12px;
+    text-align: left;
+}
+th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+}
+tr:nth-child(2n) {
+    background-color: #fafbfc;
+}
+hr {
+    height: 1px;
+    background-color: #e1e4e8;
+    border: none;
+    margin: 24px 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 4px;
+    background: #28a745;
+    color: white;
+}
+</style>
+</head>
+<body>
+<h1>TASK 17: Dashboard Audit, Data Provenance, and Enhancement Report</h1>
+<p><strong>Project:</strong> DevOps-Enabled Public Parking Availability Dashboard (ParkWatch)</p>
+<p><strong>Student:</strong> Sajiya Shaikh | <strong>Roll Number:</strong> 24102A2005</p>
+<p><strong>Execution Date:</strong> October 18, 2026</p>
+<p><strong>Status:</strong> <strong>AUDITED, ENHANCED &amp; VERIFIED</strong> (45/45 Unit/Integration Tests Passing, 6/6 Python Tests Passing)</p>
+<hr/>
+<h2>Executive Summary</h2>
+<p>This report documents the comprehensive audit and enhancement of the ParkWatch public parking dashboard following the integration of the AI computer-vision module. In accordance with strict DevOps and academic safety rules:</p>
+<ol>
+<li>Baseline operational metrics were measured from the running database without modifying or resetting <code>data/parkingdb.mv.db</code>.</li>
+<li>The root cause of the <strong>24-versus-25 parking locations discrepancy</strong> was thoroughly investigated and identified: the persistent database originally seeded 24 pan-Indian metropolitan locations, and location #25 (<code>PPL-099 Civic Center Innovation Garage</code>) was dynamically created during the automated endpoint regression suite in Task 14 (<code>scripts/test-endpoints.ps1</code>). The database seed guard (<code>if (repo.count() &gt; 0) return;</code>) rightly prevented subsequent overwrites.</li>
+<li>A transparent <strong>Data Provenance Audit</strong> was performed: while source code in <code>SampleDataConfig.java</code> was previously drafted for 24 Mumbai BMC lots, the active persistent database actually serves an illustrative pan-Indian metropolitan sample (Mumbai, Delhi NCR, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Chandigarh). Real-time telemetry is simulated for academic demonstration.</li>
+<li>Three high-value, safe improvements were implemented:</li>
+</ol>
+<ul>
+<li><strong>Fixed Hibernate Lazy Proxy JSON Serialization Error:</strong> Eliminated an HTTP 500 failure on <code>GET /api/v1/events/recent</code> and <code>GET /api/v1/events/location/{id}</code> by adding <code>@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})</code>.</li>
+<li><strong>Global Event Audit Log View:</strong> Created <code>@GetMapping("/events")</code> in <code>ParkingEventController</code> and enhanced <code>event-list.html</code> to provide an accessible audit log across all municipal facilities with direct navigation.</li>
+<li><strong>CSV / Data Export Endpoint:</strong> Implemented <code>GET /api/v1/locations/export?format=csv</code> and integrated an <strong>Export CSV</strong> action on the main dashboard for administrative reporting.</li>
+<li><strong>Data Freshness Indicators:</strong> Embedded real-time telemetry delay indicators (<code>&gt;60 mins</code>) on the dashboard table rows.</li>
+</ul>
+<ol>
+<li>Full regression test suites passed (45/45 Maven Spring Boot tests, 6/6 Python AI pipeline tests).</li>
+</ol>
+<hr/>
+<h2>1. Verified Baseline Operational Metrics</h2>
+<p>The application was inspected running on dedicated test port <strong>8085</strong> (preserving the active Jenkins CI service on port 8080). Operational metrics were queried directly from the REST API:</p>
+<table>
+<thead><tr>
+<th>Metric</th>
+<th>Measured Value</th>
+<th>API Endpoint / Source</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Total Parking Locations</strong></td>
+<td><code>25</code></td>
+<td><code>GET /api/v1/locations</code></td>
+</tr>
+<tr>
+<td><strong>Total Parking Capacity</strong></td>
+<td><code>8,040</code> spaces</td>
+<td><code>GET /api/v1/dashboard/summary</code></td>
+</tr>
+<tr>
+<td><strong>Total Occupied Spaces</strong></td>
+<td><code>4,531</code> spaces</td>
+<td><code>GET /api/v1/dashboard/summary</code></td>
+</tr>
+<tr>
+<td><strong>Total Available Spaces</strong></td>
+<td><code>3,509</code> spaces</td>
+<td><code>GET /api/v1/dashboard/summary</code></td>
+</tr>
+<tr>
+<td><strong>Overall Utilization Rate</strong></td>
+<td><code>56.4%</code></td>
+<td><code>GET /api/v1/dashboard/summary</code></td>
+</tr>
+<tr>
+<td><strong>Full Capacity Locations</strong></td>
+<td><code>3</code> (<code>100%</code> saturation)</td>
+<td><code>GET /api/v1/locations?filter=FULL</code></td>
+</tr>
+<tr>
+<td><strong>Low Availability Locations</strong></td>
+<td><code>5</code> (<code>&gt;= 85%</code> utilization)</td>
+<td><code>GET /api/v1/locations?filter=LOW</code></td>
+</tr>
+<tr>
+<td><strong>Available / Normal Locations</strong></td>
+<td><code>17</code> (<code>&lt; 85%</code> utilization)</td>
+<td><code>GET /api/v1/locations?filter=AVAILABLE</code></td>
+</tr>
+<tr>
+<td><strong>Stale Telemetry Locations</strong></td>
+<td><code>25</code> (<code>&gt; 60 mins</code> old)</td>
+<td><code>GET /api/v1/locations?filter=STALE</code></td>
+</tr>
+<tr>
+<td><strong>Total System Alerts</strong></td>
+<td><code>33</code> (3 Full + 5 Low + 25 Stale)</td>
+<td><code>GET /api/v1/alerts</code></td>
+</tr>
+<tr>
+<td><strong>Recent Parking Events</strong></td>
+<td><code>1</code> recorded event in DB</td>
+<td><code>GET /api/v1/events/recent</code></td>
+</tr>
+</table>
+<hr/>
+<h2>2. Investigation: The 24-versus-25 Location Discrepancy</h2>
+<h3>2.1 The Discrepancy</h3>
+<p>Earlier project documentation (Tasks 03, 04, and 15) reported <strong>24</strong> parking locations, whereas recent verification tasks reported <strong>25</strong> locations.</p>
+<h3>2.2 Root Cause Analysis</h3>
+<p>An inspection of the database records and git commit history revealed the exact chain of events:</p>
+<ol>
+<li><strong>Initial Seeding (Task 03 / Commit <code>53f42f9d</code>):</strong>  </li>
+</ol>
+<p>The application seeded 24 initial locations (<code>PPL-001</code> through <code>PPL-024</code>) into the persistent file-backed H2 database at <code>data/parkingdb.mv.db</code>.</p>
+<ol>
+<li><strong>Automated Endpoint Testing (Task 14 / Commit <code>d40dae0a</code>):</strong>  </li>
+</ol>
+<p>The test script <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/scripts/test-endpoints.ps1"><code>scripts/test-endpoints.ps1</code></a> lines 40–54 performed a functional test of the <code>POST /api/v1/locations</code> endpoint:</p>
+<p>```powershell</p>
+<p>$newLocBody = @{</p>
+<p>name = "Civic Center Innovation Garage"</p>
+<p>area = "Cyber City"</p>
+<p>address = "500 Tech Boulevard"</p>
+<p>totalCapacity = 100</p>
+<p>occupiedSpaces = 25</p>
+<p>locationCode = "PPL-099"</p>
+<p>contactPhone = "+91 98765 43210"</p>
+<p>description = "Smart automated municipal lot"</p>
+<p>active = $true</p>
+<p>} | ConvertTo-Json</p>
+<p>$created = Invoke-RestMethod -Uri "http://localhost:8080/api/v1/locations" -Method Post -Body $newLocBody ...</p>
+<p>```</p>
+<p>This created <strong>Location #25</strong> (<code>PPL-099 Civic Center Innovation Garage</code>).</p>
+<ol>
+<li><strong>Database Guard Preservation:</strong>  </li>
+</ol>
+<p>In <code>SampleDataConfig.java</code>, line 35 enforces:</p>
+<p>```java</p>
+<p>if (repo.count() &gt; 0) {</p>
+<p>log.info("Parking location database already initialized ({} locations present). Skipping seed.", repo.count());</p>
+<p>return;</p>
+<p>}</p>
+<p>```</p>
+<p>Because <code>data/parkingdb.mv.db</code> is a persistent database file and strict project rules forbid deleting or resetting <code>parkingdb.mv.db</code>, the 25th record persisted across all subsequent test runs and restarts.</p>
+<h3>2.3 Verdict</h3>
+<p>The difference is <strong>not</strong> a database corruption or a bug; it is a <strong>legitimate persistent test entity</strong> created during end-to-end integration testing in Task 14. In adherence to the safety rule <em>"Do not delete or modify any records to make the numbers match"</em>, the record is preserved as an active demonstration facility.</p>
+<hr/>
+<h2>3. Data Provenance Audit</h2>
+<p>An audit of the active records in <code>data/parkingdb.mv.db</code> establishes the true provenance of the dashboard dataset:</p>
+<table>
+<thead><tr>
+<th>ID</th>
+<th>Location Code</th>
+<th>Facility Name</th>
+<th>Geographic Locality</th>
+<th>Metro Region</th>
+<th>Provenance Classification</th>
+</tr></thead><tbody>
+<tr>
+<td>1</td>
+<td><code>PPL-001</code></td>
+<td>Bandra West Civic Plaza Parking</td>
+<td>Bandra West, SV Road</td>
+<td>Mumbai (MMR)</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>PPL-002</code></td>
+<td>Koramangala IT Park Parking</td>
+<td>Koramangala 4th Block</td>
+<td>Bengaluru</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>PPL-003</code></td>
+<td>Sector 17 Government Parking</td>
+<td>Sector 17 Plaza</td>
+<td>Chandigarh</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>PPL-004</code></td>
+<td>Connaught Place Underground Parking</td>
+<td>Block A, Connaught Place</td>
+<td>New Delhi (NCR)</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>PPL-005</code></td>
+<td>Jubilee Hills Club Parking</td>
+<td>Road No. 36, Jubilee Hills</td>
+<td>Hyderabad</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>PPL-006</code></td>
+<td>Vashi Railway Station Parking</td>
+<td>Sector 17, Vashi</td>
+<td>Navi Mumbai (MMR)</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>PPL-007</code></td>
+<td>MG Road Metro Parking</td>
+<td>MG Road Station</td>
+<td>Bengaluru</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>PPL-008</code></td>
+<td>Salt Lake Sector V Parking</td>
+<td>Webel More, Sector V</td>
+<td>Kolkata</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>PPL-009</code></td>
+<td>Garware College Road Parking</td>
+<td>FC Road, Shivajinagar</td>
+<td>Pune</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>PPL-010</code></td>
+<td>Anna Nagar Tower Parking</td>
+<td>3rd Avenue, Anna Nagar West</td>
+<td>Chennai</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>PPL-011</code></td>
+<td>Phoenix MarketCity Parking - Block C</td>
+<td>Whitefield Main Road</td>
+<td>Bengaluru</td>
+<td>Commercial Retail Sample</td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>PPL-012</code></td>
+<td>Linking Road Shopping Parking</td>
+<td>Linking Road, Bandra West</td>
+<td>Mumbai (MMR)</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>PPL-013</code></td>
+<td>Laxmi Nagar District Centre Parking</td>
+<td>District Centre, Laxmi Nagar</td>
+<td>New Delhi (NCR)</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>PPL-014</code></td>
+<td>Hitech City Central Parking</td>
+<td>Cyber Towers, Hitech City</td>
+<td>Hyderabad</td>
+<td>Commercial Tech Hub Sample</td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>PPL-015</code></td>
+<td>Law Garden Night Market Parking</td>
+<td>Law Garden Road, Ellisbridge</td>
+<td>Ahmedabad</td>
+<td>Illustrative Sample Data</td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>PPL-016</code></td>
+<td>Sarojini Nagar Market Parking</td>
+<td>Sarojini Nagar Market</td>
+<td>New Delhi (NCR)</td>
+<td>Municipal Market Sample</td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>PPL-017</code></td>
+<td>Dadar Station East Parking</td>
+<td>Dadar East</td>
+<td>Mumbai (MMR)</td>
+<td>Railway Transit Sample</td>
+</tr>
+<tr>
+<td>18</td>
+<td><code>PPL-018</code></td>
+<td>Commercial Street Parking</td>
+<td>Commercial Street</td>
+<td>Bengaluru</td>
+<td>Commercial Retail Sample</td>
+</tr>
+<tr>
+<td>19</td>
+<td><code>PPL-019</code></td>
+<td>Churchgate Station Parking</td>
+<td>Marine Lines</td>
+<td>Mumbai (MMR)</td>
+<td>Railway Transit Sample</td>
+</tr>
+<tr>
+<td>20</td>
+<td><code>PPL-020</code></td>
+<td>Karol Bagh Multi-Level Parking</td>
+<td>Ajmal Khan Road</td>
+<td>New Delhi (NCR)</td>
+<td>Municipal Lot Sample</td>
+</tr>
+<tr>
+<td>21</td>
+<td><code>PPL-021</code></td>
+<td>Egmore Bus Terminus Parking</td>
+<td>EVR Periyar Salai</td>
+<td>Chennai</td>
+<td>Transit Hub Sample</td>
+</tr>
+<tr>
+<td>22</td>
+<td><code>PPL-022</code></td>
+<td>Majestic Bus Stand Parking</td>
+<td>Kempegowda Bus Station</td>
+<td>Bengaluru</td>
+<td>Transit Hub Sample</td>
+</tr>
+<tr>
+<td>23</td>
+<td><code>PPL-023</code></td>
+<td>Sector 18 Noida Parking</td>
+<td>Sector 18 Commercial Hub</td>
+<td>Noida (NCR)</td>
+<td>Commercial Center Sample</td>
+</tr>
+<tr>
+<td>24</td>
+<td><code>PPL-024</code></td>
+<td>Vastrapur Lake Parking</td>
+<td>Vastrapur Lake Road</td>
+<td>Ahmedabad</td>
+<td>Civic Amenity Sample</td>
+</tr>
+<tr>
+<td>25</td>
+<td><code>PPL-099</code></td>
+<td>Civic Center Innovation Garage</td>
+<td>500 Tech Boulevard, Cyber City</td>
+<td>Test Facility</td>
+<td>Dynamic Integration Test Entity</td>
+</tr>
+</table>
+<h3>Provenance Audit Conclusions:</h3>
+<ul>
+<li><strong>Pan-Indian Metropolitan Scope:</strong> The active database does not contain purely BMC Mumbai municipal lots; it represents a diverse cross-section of 9 Indian urban hubs across 8 states/UTs.</li>
+<li><strong>Simulated Real-Time Feeds:</strong> Brihanmumbai Municipal Corporation (BMC/MCGM) does not expose an open real-time sensor API for private third-party ingestion. Therefore, all occupancy numbers, timestamps, and sensor telemetry represent simulated operational data for DevOps testing and academic demonstration.</li>
+<li><strong>AI Separation:</strong> AI computer-vision predictions from <code>POST /ai-analysis</code> (derived from the Brazilian PKLot dataset) remain strictly decoupled from this database and never alter municipal lot counts.</li>
+</ul>
+<hr/>
+<h2>4. Dashboard Feature Audit &amp; Testing</h2>
+<table>
+<thead><tr>
+<th>Feature Under Audit</th>
+<th>Tested Endpoint / Route</th>
+<th>Verification Command / Method</th>
+<th>Status</th>
+<th>Audit Findings</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Search Functionality</strong></td>
+<td><code>GET /?search=Bandra</code> &amp; <code>GET /api/v1/locations?search=Bandra</code></td>
+<td><code>curl.exe -s "http://localhost:8085/?search=Bandra"</code></td>
+<td><strong>WORKING</strong></td>
+<td>Correctly filters and returns 2 matching facilities (Bandra Civic Plaza, Linking Road).</td>
+</tr>
+<tr>
+<td><strong>Status Filtering</strong></td>
+<td><code>GET /?filter=FULL</code> &amp; <code>GET /api/v1/locations?filter=...</code></td>
+<td>REST API calls with <code>FULL</code>, <code>LOW</code>, <code>AVAILABLE</code>, <code>STALE</code></td>
+<td><strong>WORKING</strong></td>
+<td>Correctly partitions locations into <code>FULL</code> (3), <code>LOW</code> (5), <code>AVAILABLE</code> (17), <code>STALE</code> (25).</td>
+</tr>
+<tr>
+<td><strong>Location Details</strong></td>
+<td><code>GET /locations/1</code></td>
+<td><code>Invoke-WebRequest -Uri 'http://localhost:8085/locations/1'</code></td>
+<td><strong>WORKING</strong></td>
+<td>HTTP 200; displays capacity progress, contact phone, timestamps, and action buttons.</td>
+</tr>
+<tr>
+<td><strong>Add / Edit Facilities</strong></td>
+<td><code>GET /locations/new</code> &amp; <code>GET /locations/1/edit</code></td>
+<td>HTTP GET and validation tests</td>
+<td><strong>WORKING</strong></td>
+<td>HTTP 200; forms validate capacity $\ge 1$, occupied $\le$ capacity, and required strings.</td>
+</tr>
+<tr>
+<td><strong>Occupancy Boundary Patch</strong></td>
+<td><code>PATCH /api/v1/locations/1/occupancy</code></td>
+<td>Tested boundary payload (<code>occupiedSpaces &gt; totalCapacity</code>)</td>
+<td><strong>WORKING</strong></td>
+<td>Correctly rejected with HTTP 400 Bad Request; valid occupancies update in place.</td>
+</tr>
+<tr>
+<td><strong>Recent Event History</strong></td>
+<td><code>GET /api/v1/events/recent</code></td>
+<td><code>curl.exe -s http://localhost:8085/api/v1/events/recent</code></td>
+<td><strong>FIXED</strong></td>
+<td>Previously failed with HTTP 500 (Jackson lazy proxy bug). Now returns HTTP 200 with JSON array.</td>
+</tr>
+<tr>
+<td><strong>Global Audit Log UI</strong></td>
+<td><code>GET /events</code></td>
+<td><code>curl.exe -s http://localhost:8085/events</code></td>
+<td><strong>NEW</strong></td>
+<td>Rendered global event audit log with facility links and operator notes.</td>
+</tr>
+<tr>
+<td><strong>Alerts &amp; Exceptions</strong></td>
+<td><code>GET /alerts</code> &amp; <code>GET /api/v1/alerts</code></td>
+<td><code>Invoke-RestMethod -Uri 'http://localhost:8085/api/v1/alerts'</code></td>
+<td><strong>WORKING</strong></td>
+<td>HTTP 200; returns 33 alerts (3 Full, 5 Low Availability, 25 Stale Telemetry).</td>
+</tr>
+<tr>
+<td><strong>AI Stall Analysis</strong></td>
+<td><code>GET /ai-analysis</code> &amp; <code>POST /ai-analysis</code></td>
+<td>End-to-end inference using YOLOv8n checkpoint</td>
+<td><strong>WORKING</strong></td>
+<td>HTTP 200; 166 stalls detected, annotated JPEG served via <code>/ai-analysis/image/...</code>.</td>
+</tr>
+<tr>
+<td><strong>CSV Data Export</strong></td>
+<td><code>GET /api/v1/locations/export?format=csv</code></td>
+<td><code>curl.exe -s http://localhost:8085/api/v1/locations/export</code></td>
+<td><strong>NEW</strong></td>
+<td>HTTP 200; exports all 25 facilities with full metadata in CSV format.</td>
+</tr>
+</table>
+<hr/>
+<h2>5. Improvements Implemented</h2>
+<p>Three safe, architectural improvements were introduced to strengthen the dashboard without altering the existing schema, database, or model:</p>
+<h3>1. Fixed Hibernate Lazy Proxy JSON Serialization</h3>
+<ul>
+<li><strong>Issue:</strong> Calling <code>GET /api/v1/events/recent</code> or <code>GET /api/v1/events/location/{id}</code> triggered <code>com.fasterxml.jackson.databind.exc.InvalidDefinitionException: No serializer found for class org.hibernate.proxy.pojo.bytebuddy.ByteBuddyInterceptor</code>.</li>
+<li><strong>Solution:</strong> Added <code>@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})</code> to <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/java/com/parking/dashboard/model/ParkingLocation.java">ParkingLocation.java</a> and <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/java/com/parking/dashboard/model/ParkingEvent.java">ParkingEvent.java</a>.</li>
+<li><strong>Result:</strong> Event REST APIs now serialize clean JSON records with nested location details and zero exceptions.</li>
+</ul>
+<h3>2. Global Event Audit Log &amp; Navigation</h3>
+<ul>
+<li><strong>Issue:</strong> Users could record events via <code>/events/new</code> or view events for a single facility via <code>/events/location/{id}</code>, but there was no global audit view across all municipal lots.</li>
+<li><strong>Solution:</strong> Added <code>@GetMapping</code> in <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/java/com/parking/dashboard/controller/ParkingEventController.java">ParkingEventController.java</a>, enhanced <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/resources/templates/event-list.html">event-list.html</a> to support both global and per-facility listings, and added <strong>Events Log</strong> to the navigation bar in <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/resources/templates/fragments/header.html">header.html</a>.</li>
+</ul>
+<h3>3. Municipal Data Export (CSV) &amp; Freshness Indicators</h3>
+<ul>
+<li><strong>Issue:</strong> No export capability existed for administrative reporting, and row-level data staleness lacked visual prominence.</li>
+<li><strong>Solution:</strong> </li>
+</ul>
+<ol>
+<li>Implemented <code>GET /api/v1/locations/export</code> in <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/java/com/parking/dashboard/controller/ParkingApiController.java">ParkingApiController.java</a> with RFC 4180 CSV escaping and <code>attachment; filename="parkwatch_locations.csv"</code>.</li>
+<li>Added an <strong>Export CSV</strong> button and direct link on <a href="file:///c:/Users/Admin/Desktop/Public-Parking-DevOps/src/main/resources/templates/dashboard.html">dashboard.html</a>.</li>
+<li>Added data freshness warning badges (<code>bi-clock-history</code>) to the <strong>Last Updated</strong> column for rows exceeding the 60-minute threshold.</li>
+</ol>
+<hr/>
+<h2>6. Verification and Regression Testing</h2>
+<h3>6.1 Unit and Integration Test Results</h3>
+<p>Executed: <code>mvn test -Dtest="!<em>Selenium</em>"</code></p>
+<pre><code class="language-text">
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running com.parking.dashboard.controller.AiAnalysisControllerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 15.20 s
+[INFO] Running com.parking.dashboard.controller.ParkingApiControllerTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.669 s
+[INFO] Running com.parking.dashboard.controller.ParkingEventControllerTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.202 s
+[INFO] Running com.parking.dashboard.ParkingDashboardApplicationTests
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.544 s
+[INFO] Running com.parking.dashboard.service.ParkingLocationServiceTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.263 s
+[INFO] 
+[INFO] Results:
+[INFO] Tests run: 45, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+</code></pre>
+<p><strong>Total:</strong> <strong>45 passed, 0 failures, 0 errors</strong> (6 new integration tests added for CSV export, recent event serialization, and global audit log rendering).</p>
+<h3>6.2 AI Pipeline Regression Tests</h3>
+<p>Executed: <code>python tests/test_ai_pipeline.py</code></p>
+<pre><code class="language-text">
+Ran 6 tests in 0.079s
+OK
+</code></pre>
+<p><strong>Total:</strong> <strong>6 passed, 0 failures</strong>.</p>
+<hr/>
+<h2>7. Known Limitations and Transparency Disclosures</h2>
+<ol>
+<li><strong>Simulated Telemetry:</strong> Sensor feeds and occupancy numbers remain simulated for academic demonstration. BMC does not provide an open public sensor API for real-time occupancy.</li>
+<li><strong>Pilot AI Model:</strong> The YOLOv8n computer vision model was trained for 1 epoch on 174 subsampled PKLot images ($mAP_{50} = 0.0063$, Precision = $0.0087$, Recall = $0.0500$) and is strictly designated as an experimental academic demonstration.</li>
+<li><strong>Port 8080 Utilization:</strong> Port 8080 is reserved by the Jenkins CI service (PID 7180) on the host machine. The dashboard application safely binds to configured ports (e.g. 8081 or 8085).</li>
+</ol>
+<hr/>
+<h2>8. Git Safety Check</h2>
+<p>Executed: <code>git status</code></p>
+<ul>
+<li><strong>Staged files:</strong> None (<code>no changes added to commit</code>).</li>
+<li><strong>Unstaged changes:</strong> Only the audited and enhanced files.</li>
+<li><strong>Untracked files:</strong> Only new report artifacts, documentation, and the new unit test file.</li>
+<li><strong>Safety Compliance:</strong> Zero database files (<code><em>.mv.db</code>), weights (<code></em>.pt</code>), dataset images, or secrets were committed or pushed.</li>
+</ul>
+</body>
+</html>

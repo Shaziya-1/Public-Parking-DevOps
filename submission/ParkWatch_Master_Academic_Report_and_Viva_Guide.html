@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Final Report And Viva</title>
+    <style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    font-size: 13pt;
+}
+@media print {
+    body {
+        max-width: 100%;
+        padding: 0;
+        font-size: 11pt;
+    }
+    @page {
+        margin: 18mm 15mm 18mm 15mm;
+        size: A4 portrait;
+        @bottom-right {
+            content: counter(page);
+        }
+    }
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    table, pre, blockquote {
+        page-break-inside: avoid;
+    }
+}
+h1 {
+    font-size: 24pt;
+    border-bottom: 2px solid #0366d6;
+    padding-bottom: 8px;
+    color: #0366d6;
+    margin-top: 24px;
+}
+h2 {
+    font-size: 18pt;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 6px;
+    color: #24292e;
+    margin-top: 22px;
+}
+h3 {
+    font-size: 14pt;
+    color: #1b1f23;
+    margin-top: 18px;
+}
+h4 {
+    font-size: 12pt;
+    color: #24292e;
+    margin-top: 14px;
+}
+p, ul, ol {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+code {
+    background-color: #f6f8fa;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+    color: #d73a49;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 9.5pt;
+    line-height: 1.45;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+blockquote {
+    border-left: 4px solid #0366d6;
+    padding: 8px 16px;
+    color: #444d56;
+    background-color: #f1f8ff;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 10pt;
+}
+th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 12px;
+    text-align: left;
+}
+th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+}
+tr:nth-child(2n) {
+    background-color: #fafbfc;
+}
+hr {
+    height: 1px;
+    background-color: #e1e4e8;
+    border: none;
+    margin: 24px 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 4px;
+    background: #28a745;
+    color: white;
+}
+</style>
+</head>
+<body>
+<h1>DevOps-Enabled Public Parking Availability Dashboard (ParkWatch)</h1>
+<h2>Master Academic Project Report &amp; Viva Voce Defense Manual</h2>
+<p><strong>Student:</strong> Sajiya Shaikh</p>
+<p><strong>Roll Number:</strong> 24102A2005</p>
+<p><strong>Course:</strong> DevOps &amp; Cloud Engineering</p>
+<p><strong>Academic Year:</strong> 2026</p>
+<p><strong>Repository:</strong> <code>C:\Users\Admin\Desktop\Public-Parking-DevOps</code></p>
+<p><strong>Git Branch:</strong> <code>master</code></p>
+<hr/>
+<h1>PART 1: FINAL ACADEMIC PROJECT REPORT</h1>
+<h2>1. Executive Summary</h2>
+<p>Urban mobility systems across global metropolitan centers suffer severe traffic congestion, excessive carbon emissions, and lost economic productivity stemming from inefficient vehicular parking spot discovery. The <strong>DevOps-Enabled Public Parking Availability Dashboard</strong> (<strong>ParkWatch</strong>) provides an enterprise-grade, resilient, automated smart-city parking management and computer-vision telemetry platform.</p>
+<p>Built with <strong>Java 21 LTS</strong>, <strong>Spring Boot 3.3.4</strong>, <strong>Spring Data JPA</strong>, <strong>Thymeleaf</strong>, and <strong>Bootstrap 5.3</strong>, the application delivers real-time parking telemetry, capacity monitoring, historical event logging, automated CSV report streaming, and an integrated <strong>YOLOv8 Computer Vision AI</strong> inference module.</p>
+<p>From an engineering operations perspective, ParkWatch exemplifies modern DevOps excellence:</p>
+<ul>
+<li><strong>Declarative CI/CD:</strong> 9-stage <code>Jenkinsfile</code> pipeline featuring cross-platform Windows/Linux execution, automated testing gates, and artifact archiving.</li>
+<li><strong>Security-First Containerization:</strong> Multi-stage <code>Dockerfile</code> creating minimal Alpine JRE images running under non-root unprivileged users (<code>parkingapp</code>, UID 1001).</li>
+<li><strong>Reverse Proxy Architecture:</strong> Production-ready Nginx reverse proxy with rate limiting, header normalization, and sensitive administrative endpoint shielding.</li>
+<li><strong>Infrastructure as Code (IaC):</strong> Idempotent Ansible playbooks managing dependencies, GPG keyrings, dynamic Jinja2 templating, and systemd service verification.</li>
+<li><strong>Automated Verification:</strong> 45 JUnit/Mockito backend tests, 7 Selenium WebDriver browser automation scenarios with automated screenshot archiving, and 6 Python AI pipeline regression tests.</li>
+<li><strong>Disaster Recovery:</strong> Native health-checking (<code>scripts/health-check.ps1</code>) and zero-downtime rollback scripts (<code>scripts/rollback.ps1</code>) for automated failure remediation.</li>
+</ul>
+<hr/>
+<h2>2. System Architecture &amp; Workflow Explanation</h2>
+<h3>2.1 Multi-Tier Layered Architecture</h3>
+<p>ParkWatch is designed according to clean architectural principles, separating presentation, business logic, data persistence, and external inference engines:</p>
+<pre><code class="language-">
++-------------------------------------------------------------------------------+
+|                             CLIENT / USER LAYER                               |
+|   Web Browsers (Chrome / Edge / Firefox)  |  Mobile Clients  |  REST Consumers|
++---------------------------------------+---------------------------------------+
+                                        | (HTTP Port 80)
+                                        v
++-------------------------------------------------------------------------------+
+|                        REVERSE PROXY &amp; SECURITY LAYER                         |
+|   Nginx 1.25 Alpine Container (Port 80 -&gt; Host Port 8085 / Container 8080)    |
+|   - Blocks /h2-console, /actuator/env, /actuator/beans (HTTP 403 Forbidden)   |
+|   - Forwards X-Forwarded-For, X-Real-IP, Host headers                         |
+|   - Exposes public /health endpoint mapping to /actuator/health               |
++---------------------------------------+---------------------------------------+
+                                        |
+                                        v
++-------------------------------------------------------------------------------+
+|                      APPLICATION / BUSINESS LOGIC LAYER                       |
+|   Spring Boot 3.3.4 Executable Service (Java 21 LTS)                          |
+|   - Presentation Controllers: DashboardController, AiAnalysisController       |
+|   - REST API Controllers: ParkingApiController (CRUD, Export, Saturation)     |
+|   - Service Tier: ParkingLocationService, AiAnalysisService                   |
+|   - Security &amp; Validation: Bean Validation, ProcessBuilder Sanitization       |
+|   - Actuator Telemetry: /actuator/health, /actuator/info                      |
++-------------------+-----------------------------------+-----------------------+
+                    |                                   |
+                    v                                   v
++------------------------------------+ +----------------------------------------+
+|      DATA PERSISTENCE LAYER        | |          APPLIED AI INFERENCE          |
+|  Spring Data JPA / Hibernate 6     | |  Python 3.12 / PyTorch / Ultralytics   |
+|  H2 Database (MySQL Compatibility) | |  YOLOv8n Object Detection (PKLot)      |
+|  File-backed: data/parkingdb.mv.db | |  scripts/ai_inference_demo.py          |
+|  25 Metropolitan Facilities        | |  Isolated Process Execution            |
++------------------------------------+ +----------------------------------------+
+</code></pre>
+<h3>2.2 End-to-End Operational Workflow</h3>
+<ol>
+<li><strong>Ingestion &amp; Data Freshness:</strong> Simulated smart sensors or parking operators publish vehicular telemetry updates to the REST API (<code>POST /api/v1/locations/{id}/occupancy</code>).</li>
+<li><strong>Business Rule Validation:</strong> The service tier evaluates capacity invariants ($0 \le \text{occupancy} \le \text{capacity}$). Violations trigger an <code>InvalidParkingUpdateException</code> returning HTTP 400.</li>
+<li><strong>Event Auditing:</strong> Every legitimate change generates an immutable <code>ParkingEvent</code> capturing timestamp, previous occupancy, updated occupancy, and delta change.</li>
+<li><strong>Data Freshness Monitoring:</strong> If telemetry is not received for $&gt;60\text{ minutes}$, the dashboard highlights the facility with a warning indicator.</li>
+<li><strong>AI Vision Ingestion:</strong> An operator uploads a parking lot surveillance image to <code>/ai-analysis</code>. The service validates file size ($\le 10\text{MB}$), MIME type (<code>image/jpeg</code>, <code>image/png</code>), and dimensions ($640\times 640$ to $4096\times 4096$).</li>
+<li><strong>Isolated Process Execution:</strong> <code>AiAnalysisService</code> invokes <code>scripts/ai_inference_demo.py</code> via an explicit <code>ProcessBuilder</code> argument array with a 45-second watchdog timer, completely isolated from the primary transactional database.</li>
+<li><strong>Telemetry Presentation:</strong> Annotated bounding boxes, detected stall counts (empty vs. occupied), and calculated occupancy rates are returned to the operator interface without touching municipal records.</li>
+</ol>
+<hr/>
+<h2>3. Real Data Provenance &amp; Facility Audit</h2>
+<h3>3.1 Baseline Dataset Provenance &amp; Verified Live Capacity</h3>
+<p>An exhaustive audit of the persistence tier (<code>data/parkingdb.mv.db</code>) and live API endpoint (<code>GET http://localhost:8085/api/v1/dashboard/summary</code>) confirmed the following verified operational values:</p>
+<ul>
+<li><strong>Total Facilities:</strong> <strong>25 municipal parking locations</strong> across 9 Indian metropolitan centers: Mumbai (Bandra, Dadar, Churchgate, Lower Parel, Vashi), Delhi NCR (Connaught Place, Karol Bagh, Laxmi Nagar, Sarojini Nagar, Sector 18 Noida), Bengaluru (MG Road, Commercial Street, Majestic, Whitefield), Hyderabad (Hitech City), Chennai (Anna Nagar, Egmore), Kolkata (Sector V), Pune (Shivajinagar), Ahmedabad (Law Garden, Vastrapur), and Chandigarh (Sector 17).</li>
+<li><strong>Total Live Capacity:</strong> <strong>8,040 municipal parking spaces</strong> (7,940 baseline capacity from the 24 initialized facilities + 100 capacity from dynamically added test facility #25).</li>
+<li><strong>Active Occupancy:</strong> <strong>4,511 occupied spaces</strong> (<strong>56.1% aggregate utilization</strong>).</li>
+<li><strong>Available Spaces:</strong> <strong>3,529 available spaces</strong>.</li>
+<li><strong>Full Locations (100% Saturation):</strong> 3 facilities (Sarojini Nagar, Dadar Station East, Commercial Street).</li>
+<li><strong>Low Availability (&gt;=85% Saturation):</strong> 5 facilities (Phoenix MarketCity, Linking Road, Laxmi Nagar, Hitech City, Law Garden).</li>
+<li><strong>Simulated Telemetry Disclosure:</strong> As documented in <code>docs/real_data_provenance_audit.md</code>, physical municipal IoT sensors are not connected to this student sandbox. High-frequency occupancy changes and vehicle event logs are simulated using realistic traffic distribution curves.</li>
+</ul>
+<h3>3.2 Resolution of Capacity Figures &amp; The 24 vs. 25 Location Discrepancy</h3>
+<ul>
+<li><strong>Why 16,846 appeared in early documentation:</strong> Source code in <code>SampleDataConfig.java</code> contained an alternate proposed seed list modeling massive multi-storey BMC facilities (such as Lodha Senapati Bapat Marg at 4,200 and Jupiter Mill at 2,370, totaling 16,846 across 24 locations). However, because <code>SampleDataConfig.java</code> contains the idempotency guard <code>if (repo.count() &gt; 0) return;</code>, the application skipped re-seeding and preserved the existing persistent database file <code>data/parkingdb.mv.db</code>.</li>
+<li><strong>The 24 vs. 25 Discrepancy:</strong> The persistent database was originally initialized with 24 pan-Indian metropolitan facilities totaling 7,940 capacity. During Task 14 automated testing, <code>scripts/test-endpoints.ps1</code> executed a REST integration test against <code>POST /api/v1/locations</code>, creating record #25 (<code>PPL-099 Civic Center Innovation Garage</code>, 100 capacity, 40 occupancy). This brought the live facility count to 25 and total capacity to exactly <strong>8,040</strong>.</li>
+</ul>
+<hr/>
+<h2>4. Applied Computer Vision &amp; PKLot Pilot Model</h2>
+<h3>4.1 Architecture &amp; Pilot Training Setup</h3>
+<ul>
+<li><strong>Model Architecture:</strong> YOLOv8 Nano (<code>yolov8n.pt</code>, 3.2M parameters) developed by Ultralytics.</li>
+<li><strong>Dataset:</strong> PKLot parking dataset containing 12,416 annotated surveillance images across varying weather conditions (Sunny, Cloudy, Rainy) and angles.</li>
+<li>Training Split: 8,691 images</li>
+<li>Validation Split: 2,483 images</li>
+<li>Test Split: 1,242 images</li>
+<li><strong>Pilot Training Constraints:</strong> To guarantee host stability without GPU acceleration, a CPU pilot was executed with:</li>
+<li>Epochs: 1</li>
+<li>Image Size: 640x640</li>
+<li>Batch Size: 8</li>
+<li>Hardware: Intel Core i7 CPU (8 threads, no CUDA available)</li>
+</ul>
+<h3>4.2 Measured Pilot Evaluation Metrics (Honest Disclosure)</h3>
+<p>A rigorous evaluation against the held-out test split (1,242 images) yielded the following empirical metrics:</p>
+<ul>
+<li><strong>Test Precision (P):</strong> 0.0087 (0.87%)</li>
+<li><strong>Test Recall (R):</strong> 0.0500 (5.00%)</li>
+<li><strong>mAP@50:</strong> 0.0063 (0.63%)</li>
+<li><strong>mAP@50-95:</strong> 0.0021 (0.21%)</li>
+</ul>
+<blockquote>[!WARNING]</blockquote>
+<blockquote><strong>Academic Integrity Notice:</strong> The custom trained checkpoint (<code>models/parkwatch_yolov8n/weights/best.pt</code>) is explicitly classified as <strong>EXPERIMENTAL / PROTOTYPE</strong>. Because training was constrained to a single CPU epoch across a massive dataset, weights have not converged. In accordance with college guidelines, these results are reported transparently without artificial inflation.</blockquote>
+<h3>4.3 End-to-End Inference Verification</h3>
+<p>Live inference was verified using a real test image from the PKLot test split (<code>2012-11-06_13_43_31_jpg.rf.00207754dbce0d625d24ca31898fcfd7.jpg</code>):</p>
+<ul>
+<li><strong>Command:</strong> <code>python scripts/ai_inference_demo.py --image &lt;image_path&gt; --model models/parkwatch_yolov8n/weights/best.pt --conf 0.005</code></li>
+<li><strong>Output Image:</strong> <code>REPORTS/ai_annotated_a858a5c9-b120-4b08-b0b5-37ce87aaeb65.jpg</code></li>
+<li><strong>Detected Stalls:</strong> 166 total bounding boxes (74 empty spaces, 92 occupied spaces)</li>
+<li><strong>Computed Occupancy:</strong> 55.4%</li>
+<li><strong>Inference Latency:</strong> 3,356 milliseconds (CPU)</li>
+</ul>
+<hr/>
+<h2>5. Setup &amp; Execution Runbook</h2>
+<h3>5.1 Local Development Mode</h3>
+<pre><code class="language-powershell">
+# Prerequisites: JDK 21 LTS, Python 3.10+
+git status
+
+# Build and run backend application on port 8085
+.\mvnw.cmd clean spring-boot:run -Dspring-boot.run.arguments="--server.port=8085"
+
+# Access dashboard in web browser
+Start-Process "http://localhost:8085"
+</code></pre>
+<h3>5.2 Multi-Container Docker Compose Stack</h3>
+<pre><code class="language-powershell">
+# Deploy application and Nginx reverse proxy
+docker compose up -d --build
+
+# Verify container health
+docker compose ps
+
+# Probe reverse proxy endpoint
+curl.exe -i http://localhost:80/health
+</code></pre>
+<h3>5.3 Automated Regression &amp; Selenium E2E Testing</h3>
+<pre><code class="language-powershell">
+# Run backend unit and integration test suite (45 tests)
+.\mvnw.cmd test "-Dtest=!*Selenium*"
+
+# Run Python AI pipeline regression tests (6 tests)
+python tests/test_ai_pipeline.py
+
+# Run Selenium E2E browser automation (Microsoft Edge)
+.\mvnw.cmd test "-Dtest=ParkingDashboardSeleniumTest" "-Dapp.base.url=http://localhost:8085"
+</code></pre>
+<hr/>
+<h2>6. DevOps Verification &amp; Test Summary</h2>
+<table>
+<thead><tr>
+<th>Testing Domain</th>
+<th>Tool / Framework</th>
+<th>Scope / Target</th>
+<th>Executed</th>
+<th>Passed</th>
+<th>Failed</th>
+<th>Status</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Unit Testing</strong></td>
+<td>JUnit 5 / Mockito</td>
+<td>Service business rules &amp; invariants</td>
+<td>22</td>
+<td>22</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+<tr>
+<td><strong>API Integration</strong></td>
+<td>Spring MockMvc</td>
+<td>REST endpoints, JSON validation, CSV</td>
+<td>23</td>
+<td>23</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+<tr>
+<td><strong>E2E Automation</strong></td>
+<td>Selenium / EdgeDriver</td>
+<td>Web UI workflows, search, forms, alerts</td>
+<td>7</td>
+<td>7</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+<tr>
+<td><strong>AI Regression</strong></td>
+<td>Python <code>unittest</code></td>
+<td>Inference CLI, JSON outputs, bounds</td>
+<td>6</td>
+<td>6</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+<tr>
+<td><strong>CI/CD Pipeline</strong></td>
+<td>Jenkins 2.580.1</td>
+<td>9-stage declarative <code>Jenkinsfile</code></td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+<tr>
+<td><strong>IaC Provisioning</strong></td>
+<td>Ansible Core 2.20</td>
+<td>Docker, GPG, user, directory structuring</td>
+<td>12</td>
+<td>12</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+<tr>
+<td><strong>Health Auditing</strong></td>
+<td>PowerShell / Bash</td>
+<td>Actuator polling &amp; automated recovery</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td><strong>VERIFIED</strong></td>
+</tr>
+</table>
+<hr/>
+<h2>7. Limitations &amp; Future Scope</h2>
+<h3>7.1 Identified Limitations</h3>
+<ol>
+<li><strong>Model Convergence:</strong> High inference accuracy requires 50–100 epochs on GPU infrastructure (CUDA-enabled NVIDIA GPUs or cloud TPUs), which was infeasible within host CPU runtime limits.</li>
+<li><strong>Camera Perspective Variance:</strong> PKLot annotations are tailored to fixed surveillance angles; variable pan-tilt-zoom cameras require domain adaptation techniques.</li>
+<li><strong>Database Concurrency:</strong> File-backed H2 is ideal for standalone demonstration but cannot support multi-node horizontal scaling.</li>
+</ol>
+<h3>7.2 Future Engineering Scope</h3>
+<ol>
+<li><strong>Distributed Cloud Persistence:</strong> Migrate to PostgreSQL / MySQL clusters with Read Replicas and Flyway database migration scripts.</li>
+<li><strong>Kubernetes &amp; Helm Deployment:</strong> Package the multi-container stack into Helm charts with Horizontal Pod Autoscaling (HPA) based on CPU/traffic metrics.</li>
+<li><strong>IoT Telemetry Streaming:</strong> Ingest MQTT/AMQP telemetry from physical ultrasonic parking sensors via Apache Kafka or RabbitMQ.</li>
+<li><strong>Edge AI Acceleration:</strong> Deploy quantized YOLOv8 models (ONNX Runtime, TensorRT, or OpenVINO) on edge devices (Raspberry Pi 5 / NVIDIA Jetson Orin) directly mounted on parking lot gantries.</li>
+</ol>
+<hr/>
+<h1>PART 2: COMPREHENSIVE ACADEMIC VIVA VOCE DEFENSE</h1>
+<h3>Section A: Spring Boot &amp; Enterprise Architecture</h3>
+<h4>Q1: What is Spring Boot and why was it chosen for ParkWatch?</h4>
+<p><strong>Answer:</strong></p>
+<p>Spring Boot is an enterprise Java framework designed to simplify application development through opinionated defaults, automatic configuration, and starter dependencies. It was chosen for ParkWatch because:</p>
+<ol>
+<li>It features an embedded Apache Tomcat web server, allowing the application to run as a self-contained executable JAR without requiring manual external servlet container setup.</li>
+<li>Spring Data JPA dramatically accelerates persistence engineering by auto-generating repository implementations from interface signatures.</li>
+<li>Spring Boot Actuator provides standardized production-grade telemetry endpoints (<code>/actuator/health</code>, <code>/actuator/info</code>) that integrate directly into DevOps deployment gates and automated rollback scripts.</li>
+</ol>
+<h4>Q2: How does the application enforce business domain integrity?</h4>
+<p><strong>Answer:</strong></p>
+<p>Business rules are enforced through layered defenses:</p>
+<ol>
+<li><strong>Entity &amp; DTO Validation:</strong> <code>@Min(0)</code>, <code>@Max(10000)</code>, <code>@NotBlank</code>, and <code>@Size</code> annotations validate user input at the controller boundary.</li>
+<li><strong>Service Layer Invariants:</strong> In <code>ParkingLocationService</code>, when an occupancy update is processed, the service verifies whether <code>newOccupancy &gt; totalCapacity</code> or <code>newOccupancy &lt; 0</code>. If violated, it throws <code>InvalidParkingUpdateException</code>.</li>
+<li><strong>Global Exception Handling:</strong> <code>@ControllerAdvice</code> (<code>GlobalExceptionHandler</code>) intercepts domain exceptions and maps them to HTTP 400 Bad Request responses with structured error JSON for REST clients, or user-friendly alert banners for HTML form submissions.</li>
+</ol>
+<h4>Q3: How was the ByteBuddy lazy loading serialization defect resolved?</h4>
+<p><strong>Answer:</strong></p>
+<p>When entities with lazy relationships (<code>@ManyToOne(fetch = FetchType.LAZY)</code>) are serialized directly to JSON via Jackson, Hibernate's dynamic proxy library (ByteBuddy) injects synthetic properties (<code>hibernateLazyInitializer</code>, <code>handler</code>). When Jackson attempts to serialize these internal fields, it throws a <code>JsonMappingException</code> (<code>No serializer found for class ...</code>).</p>
+<p>We resolved this by adding <code>@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})</code> to both <code>ParkingLocation</code> and <code>ParkingEvent</code> entities, ensuring clean and reliable JSON serialization.</p>
+<hr/>
+<h3>Section B: Automated Testing &amp; Browser Automation</h3>
+<h4>Q4: Differentiate between Unit Tests, MockMvc Tests, and Selenium E2E Tests.</h4>
+<p><strong>Answer:</strong></p>
+<ul>
+<li><strong>Unit Tests:</strong> Verify individual business methods in strict isolation using Mockito mocks (e.g., verifying capacity calculations in <code>ParkingLocationServiceTest</code>). They run in milliseconds in memory.</li>
+<li><strong>MockMvc Tests:</strong> Test HTTP controller mappings, security filters, request param binding, and JSON responses without starting a real network socket.</li>
+<li><strong>Selenium E2E Tests:</strong> Drive an actual web browser (Microsoft Edge) against the deployed application, validating DOM elements, CSS styles, client-side JavaScript execution, form workflows, and visual rendering from the end-user's perspective.</li>
+</ul>
+<h4>Q5: What is Headless Browser Testing and why is it critical in CI/CD?</h4>
+<p><strong>Answer:</strong></p>
+<p>Headless browser testing executes browser automation without initializing a visible graphical display window. It is critical in CI/CD pipelines because:</p>
+<ol>
+<li>CI build runners (such as Jenkins nodes or Docker containers) operate in headless server environments without attached monitors or X11/Wayland display servers.</li>
+<li>It reduces CPU and memory overhead by bypassing OS window rendering subsystems, resulting in faster and more reliable automated test execution.</li>
+</ol>
+<hr/>
+<h3>Section C: CI/CD Pipelines &amp; Jenkins Quality Gates</h3>
+<h4>Q6: What is a Quality Gate in a CI/CD pipeline?</h4>
+<p><strong>Answer:</strong></p>
+<p>A Quality Gate is an automated enforcement checkpoint that stops the build pipeline if defined code quality, testing, or security criteria are not met. In our declarative <code>Jenkinsfile</code>:</p>
+<ul>
+<li>Stage 3 compiles the Java source code.</li>
+<li>Stage 4 executes 45 unit and integration tests.</li>
+<li>If even a single test fails, the pipeline immediately halts with build status <code>FAILURE</code>, preventing defective code from progressing to packaging, Docker containerization, or production deployment.</li>
+</ul>
+<h4>Q7: How does cross-platform execution work in your <code>Jenkinsfile</code>?</h4>
+<p><strong>Answer:</strong></p>
+<p>Jenkins pipelines frequently run on heterogeneous infrastructure (Windows controllers vs. Linux build agents). Our <code>Jenkinsfile</code> uses the pipeline DSL function <code>isUnix()</code> to dynamically switch execution commands:</p>
+<pre><code class="language-groovy">
+if (isUnix()) {
+    sh './mvnw clean test'
+} else {
+    bat '.\\mvnw.cmd clean test'
+}
+</code></pre>
+<p>This ensures that the exact same pipeline definition runs seamlessly on Windows developer workstations and production Linux build clusters.</p>
+<hr/>
+<h3>Section D: Docker Containerization &amp; Security</h3>
+<h4>Q8: What are the engineering advantages of a Multi-Stage Dockerfile?</h4>
+<p><strong>Answer:</strong></p>
+<p>Our <code>Dockerfile</code> utilizes a two-stage build architecture:</p>
+<ol>
+<li><strong>Builder Stage (<code>maven:3.9-eclipse-temurin-21-alpine</code>):</strong> Mounts source code, downloads dependencies, and compiles the executable fat JAR.</li>
+<li><strong>Runtime Stage (<code>eclipse-temurin:21-jre-alpine</code>):</strong> Copies only the compiled JAR file from the builder stage into a clean, minimal JRE image.</li>
+</ol>
+<ul>
+<li><strong>Result:</strong> Image size is reduced from $&gt;800\text{MB}$ to $\approx 200\text{MB}$.</li>
+<li><strong>Security:</strong> Compilers, package managers, and source code are excluded from the final image, minimizing attack vectors in production.</li>
+</ul>
+<h4>Q9: Why is running containers as <code>root</code> considered a critical security vulnerability?</h4>
+<p><strong>Answer:</strong></p>
+<p>Running containers as root violates the principle of least privilege. If a remote code execution vulnerability is exploited inside the application runtime, an attacker would gain root privileges inside the container, substantially increasing the risk of container breakouts and unauthorized host filesystem access. ParkWatch creates a dedicated system user and group (<code>parkingapp</code>, UID 1001) and sets <code>USER parkingapp:parkingapp</code> before launching the JVM.</p>
+<hr/>
+<h3>Section E: Infrastructure as Code (IaC) &amp; Ansible</h3>
+<h4>Q10: What is Idempotency in Ansible and why is it vital?</h4>
+<p><strong>Answer:</strong></p>
+<p>Idempotency guarantees that running an automation playbook multiple times produces the exact same system state without unintended changes or errors. In our <code>ansible/playbook.yml</code>:</p>
+<ul>
+<li>If Docker is already installed, Ansible reports <code>ok</code> and skips package reinstallation.</li>
+<li>If application directories (<code>/opt/parkwatch</code>) already exist with proper permissions, no disk modifications occur.</li>
+</ul>
+<p>This eliminates configuration drift and ensures reproducible server provisioning.</p>
+<h4>Q11: How did you replace deprecated Ansible modules?</h4>
+<p><strong>Answer:</strong></p>
+<p>Legacy playbooks utilized <code>apt_key</code> to manage GPG signing keys, which is now deprecated due to security risks associated with adding keys directly to <code>/etc/apt/trusted.gpg</code>. Our modernized playbook uses <code>ansible.builtin.get_url</code> and <code>ansible.builtin.command</code> to de-armor and store official Docker GPG keys into isolated keyrings under <code>/etc/apt/keyrings/docker.gpg</code>, referencing them securely via <code>signed-by</code> repository definitions.</p>
+<hr/>
+<h3>Section F: Applied Computer Vision &amp; PKLot</h3>
+<h4>Q12: Why was YOLOv8 chosen over alternative architectures like Faster R-CNN or SSD?</h4>
+<p><strong>Answer:</strong></p>
+<p>YOLOv8 (You Only Look Once, Version 8) provides an optimal balance between inference speed and detection accuracy:</p>
+<ol>
+<li><strong>Single-Stage Architecture:</strong> Treats object detection as a direct regression problem, predicting bounding boxes and class probabilities in a single forward pass.</li>
+<li><strong>Anchor-Free Detection:</strong> Eliminates manual anchor box tuning, improving generalization across objects with extreme aspect ratios (such as angled parking stalls).</li>
+<li><strong>Edge Optimization:</strong> The YOLOv8 Nano variant requires only 3.2M parameters and 8.7 GFLOPs, making it suitable for low-power edge gateways and CPU inference.</li>
+</ol>
+<h4>Q13: Why are the custom model evaluation metrics classified as experimental?</h4>
+<p><strong>Answer:</strong></p>
+<p>To prevent host CPU starvation during development, training was limited to 1 pilot epoch on CPU. Because the PKLot dataset contains 8,691 training images with subtle visual boundaries under rainy and overcast conditions, the model's weights did not reach mathematical convergence, yielding test mAP@50 of 0.0063. In alignment with academic integrity principles, the model is transparently documented as an experimental demonstration prototype rather than an operational municipal system.</p>
+<hr/>
+<h3>Section G: Data Provenance &amp; Consistency</h3>
+<h4>Q14: What is the origin of the parking facilities in the database?</h4>
+<p><strong>Answer:</strong></p>
+<p>The dataset is an illustrative metropolitan sample representing 24 major municipal parking structures across Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, and Chandigarh. The facility names, addresses, and capacities mirror real urban parking facilities, while live occupancy levels and vehicle transition logs are simulated using realistic urban traffic probability curves.</p>
+<h4>Q15: Explain why the database contains 25 locations when reports initially documented 24.</h4>
+<p><strong>Answer:</strong></p>
+<p>Initial seed scripts populated 24 municipal locations (7,940 capacity). During Task 14 automated testing, <code>scripts/test-endpoints.ps1</code> executed a REST integration test (<code>POST /api/v1/locations</code>), adding a 25th location (<code>PPL-099 Civic Center Innovation Garage</code>, 100 capacity, 40 occupancy). Because <code>SampleDataConfig.java</code> checks <code>if (repository.count() == 0)</code> before seeding, existing database records were preserved across restarts. This brought the live facility count to 25 and total capacity to exactly 8,040, demonstrating persistence durability.</p>
+<hr/>
+<h3>Section H: Web Engineering &amp; Data Export</h3>
+<h4>Q16: How is the CSV data export implemented to prevent OutOfMemory errors?</h4>
+<p><strong>Answer:</strong></p>
+<p>The CSV export endpoint (<code>GET /api/v1/locations/export</code>) uses direct HTTP response stream piping (<code>PrintWriter</code> on <code>HttpServletResponse.getWriter()</code>) with standard HTTP headers (<code>Content-Type: text/csv</code>, <code>Content-Disposition: attachment; filename=parking_locations.csv</code>). It streams entity rows iteratively without buffering the entire CSV string in heap memory, ensuring safe operation even with tens of thousands of records.</p>
+<h4>Q17: How is the Global Event Log structured?</h4>
+<p><strong>Answer:</strong></p>
+<p>The Global Event Log (<code>GET /events</code>) provides an immutable chronological audit trail of all vehicular ingress and egress operations across the entire metropolitan area. Each entry records the parent facility ID, name, old occupancy, new occupancy, net vehicle delta, timestamp, and human-readable operational remarks.</p>
+<hr/>
+<h3>Section I: Security &amp; Process Isolation</h3>
+<h4>Q18: How is the AI inference process isolated from the Spring Boot application?</h4>
+<p><strong>Answer:</strong></p>
+<p>The AI subsystem does not execute arbitrary code or interact directly with the database:</p>
+<ol>
+<li>Uploaded images are written to a sandboxed temporary directory with UUID-based filenames.</li>
+<li>Inference is executed as an isolated sub-process via Java <code>ProcessBuilder</code> with an explicit argument array (preventing shell injection attacks).</li>
+<li>A 45-second execution watchdog forcibly terminates runaway Python processes.</li>
+<li>Generated bounding boxes and occupancy counts are returned as detached DTOs, preventing external AI outputs from overwriting core municipal database records.</li>
+</ol>
+<h4>Q19: What input validation measures protect the image upload endpoint?</h4>
+<p><strong>Answer:</strong></p>
+<p>The upload endpoint validates:</p>
+<ol>
+<li><strong>File Size:</strong> Multipart limit enforced at $\le 10\text{MB}$.</li>
+<li><strong>MIME Type:</strong> Whitelisted strictly to <code>image/jpeg</code> and <code>image/png</code>.</li>
+<li><strong>Image Integrity:</strong> Java <code>ImageIO.read()</code> parses image headers to verify file integrity and check pixel dimensions (minimum $640\times 640$, maximum $4096\times 4096$).</li>
+</ol>
+<hr/>
+<h3>Section J: Networking, Reverse Proxy &amp; Disaster Recovery</h3>
+<h4>Q20: Why is an Nginx reverse proxy used instead of exposing Spring Boot directly?</h4>
+<p><strong>Answer:</strong></p>
+<p>Nginx acts as a dedicated edge gatekeeper:</p>
+<ol>
+<li><strong>Standard Port Binding:</strong> Exposes HTTP port 80 to users while routing to internal non-standard application ports (8080/8085).</li>
+<li><strong>Security Shielding:</strong> Intercepts and blocks administrative paths (<code>/h2-console</code>, <code>/actuator/env</code>) with HTTP 403 Forbidden.</li>
+<li><strong>Header Normalization:</strong> Accurately forwards client IP addresses (<code>X-Forwarded-For</code>) and request protocols (<code>X-Forwarded-Proto</code>) to the backend.</li>
+</ol>
+<h4>Q21: How does automated disaster recovery and rollback operate in ParkWatch?</h4>
+<p><strong>Answer:</strong></p>
+<p>Our automated rollback architecture (<code>scripts/rollback.ps1</code> and <code>scripts/rollback.sh</code>) monitors deployments:</p>
+<ol>
+<li>Following a new container rollout, the script probes <code>/actuator/health</code> up to 10 times with exponential backoff.</li>
+<li>If the container fails to report status <code>UP</code>, the script halts the broken container and removes it.</li>
+<li>It immediately launches the previously tagged stable Docker image (<code>public-parking-dashboard:1.0.0-previous</code>), restoring service availability without human intervention.</li>
+</ol>
+</body>
+</html>

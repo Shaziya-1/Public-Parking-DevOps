@@ -8,11 +8,14 @@ import com.parking.dashboard.model.ParkingLocation;
 import com.parking.dashboard.service.ParkingEventService;
 import com.parking.dashboard.service.ParkingLocationService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -67,6 +70,39 @@ public class ParkingApiController {
             result = locationService.findAll();
         }
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping(value = "/locations/export")
+    public ResponseEntity<String> exportLocations(
+            @RequestParam(defaultValue = "csv") String format) {
+        List<ParkingLocation> locations = locationService.findAll();
+        StringBuilder csv = new StringBuilder();
+        csv.append("ID,LocationCode,Name,Area,Address,TotalCapacity,OccupiedSpaces,AvailableSpaces,UtilizationPercentage,Status,LastUpdated\n");
+        for (ParkingLocation loc : locations) {
+            csv.append(loc.getId()).append(",")
+               .append(escapeCsv(loc.getLocationCode())).append(",")
+               .append(escapeCsv(loc.getName())).append(",")
+               .append(escapeCsv(loc.getArea())).append(",")
+               .append(escapeCsv(loc.getAddress())).append(",")
+               .append(loc.getTotalCapacity()).append(",")
+               .append(loc.getOccupiedSpaces()).append(",")
+               .append(loc.getAvailableSpaces()).append(",")
+               .append(String.format(Locale.US, "%.1f", loc.getUtilizationPercentage())).append(",")
+               .append(loc.getAvailabilityStatus()).append(",")
+               .append(loc.getLastUpdated() != null ? loc.getLastUpdated().toString() : "").append("\n");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv; charset=UTF-8"));
+        headers.setContentDispositionFormData("attachment", "parkwatch_locations.csv");
+        return new ResponseEntity<>(csv.toString(), headers, HttpStatus.OK);
+    }
+
+    private String escapeCsv(String value) {
+        if (value == null) return "";
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 
     @GetMapping("/locations/{id}")

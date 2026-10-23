@@ -81,7 +81,7 @@ Design and implement the object-relational domain model using Jakarta Persistenc
 ## 7. Screenshots as Evidence
 - **H2 Database Schema & Table Verification:**  
   ![H2 Schema and Tables](screenshots/task_03/h2_console_schema.png)  
-  *Evidence Description:* Shows H2 Web Console at `http://localhost:8080/h2-console` displaying tables `PARKING_LOCATION` and `PARKING_EVENT` with active constraints and columns.
+  *Evidence Description:* Terminal output displaying H2 database connection, tables `PARKING_LOCATIONS` and `PARKING_EVENTS`, and column structure in MySQL compatibility mode.
 
 > **Screenshot Capture Instructions for Student:**  
 > When the application is running, navigate to `http://localhost:8080/h2-console`, connect with JDBC URL `jdbc:h2:mem:parkingdb`, expand the schema tree on the left panel, take a screenshot (`Win + Shift + S`), and save it to:  

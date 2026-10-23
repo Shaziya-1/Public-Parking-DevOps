@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Presentation Slides</title>
+    <style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+.slide {
+    background-color: white;
+    width: 900px;
+    min-height: 520px;
+    margin: 25px auto;
+    padding: 40px 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    border-top: 6px solid #0366d6;
+    box-sizing: border-box;
+    page-break-after: always;
+}
+@media print {
+    body {
+        background-color: white;
+    }
+    .slide {
+        margin: 0;
+        width: 100%;
+        min-height: 100vh;
+        box-shadow: none;
+        border-radius: 0;
+        border-top: 6px solid #0366d6;
+        padding: 30px 40px;
+        page-break-after: always;
+    }
+    @page {
+        size: A4 landscape;
+        margin: 10mm;
+    }
+}
+h2 {
+    color: #0366d6;
+    font-size: 22pt;
+    margin-top: 0;
+    border-bottom: 2px solid #eaecef;
+    padding-bottom: 8px;
+}
+h3 {
+    color: #24292e;
+    font-size: 16pt;
+    margin-top: 10px;
+}
+p, ul, ol {
+    font-size: 12pt;
+    margin-bottom: 12px;
+}
+li {
+    margin-bottom: 6px;
+}
+code {
+    background-color: #f6f8fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 0.9em;
+    color: #d73a49;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 10px;
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 9pt;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 9.5pt;
+}
+th, td {
+    border: 1px solid #dfe2e5;
+    padding: 6px 10px;
+}
+th {
+    background-color: #f1f8ff;
+    color: #0366d6;
+}
+</style>
+</head>
+<body>
+<h1>ParkWatch: DevOps-Enabled Public Parking Availability Dashboard</h1>
+<div class="slide">
+<h2>Final Project Presentation &amp; Slide Deck</h2>
+<p><strong>Student Name:</strong> Sajiya Shaikh</p>
+<p><strong>Roll Number:</strong> 24102A2005</p>
+<p><strong>Course:</strong> DevOps &amp; Cloud Engineering</p>
+<p><strong>Academic Year:</strong> 2026</p>
+<p><strong>Repository:</strong> <code>Public-Parking-DevOps</code></p>
+<p><strong>Application Version:</strong> 1.0.0</p>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 1: Title &amp; Introduction</h2>
+<h3><strong>ParkWatch: DevOps-Enabled Public Parking Availability Dashboard</strong></h3>
+<ul>
+<li><strong>Presenter:</strong> Sajiya Shaikh (Roll No: 24102A2005)</li>
+<li><strong>Domain:</strong> DevOps Engineering, Cloud Computing, Full-Stack Web Development, Applied Computer Vision</li>
+<li><strong>Theme:</strong> Building a resilient, observable smart-city parking management system with full CI/CD automation and experimental AI computer-vision vacancy detection.</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 2: Problem Statement &amp; Objectives</h2>
+<h3><strong>Urban Mobility &amp; Infrastructure Bottlenecks</strong></h3>
+<ul>
+<li><strong>Problem:</strong></li>
+<li>Urban drivers spend up to 20 minutes circling dense commercial corridors looking for parking, causing up to 30% of metropolitan congestion and unnecessary carbon emissions.</li>
+<li>Public parking operators lack centralized telemetry, audit trails, and automated saturation alerting.</li>
+<li><strong>Project Objectives:</strong></li>
+</ul>
+<ol>
+<li>Build a high-performance, responsive web dashboard for citizens and operators to monitor lot capacity.</li>
+<li>Implement strict domain invariants (capacity guards, saturation alerts, vehicle event logs).</li>
+<li>Automate the software lifecycle using enterprise DevOps tools (Git, Maven, Jenkins, Docker, Nginx, Ansible, Selenium).</li>
+<li>Integrate an experimental AI computer-vision module capable of detecting vacant stalls from surveillance camera frames.</li>
+</ol>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 3: System Architecture &amp; Technology Stack</h2>
+<h3><strong>Multi-Tier Distributed Architecture</strong></h3>
+<ul>
+<li><strong>Backend Application Core:</strong></li>
+<li><strong>Framework:</strong> Spring Boot 3.3.4 (Java 21 LTS)</li>
+<li><strong>Data Access:</strong> Spring Data JPA with Hibernate ORM</li>
+<li><strong>Database:</strong> Relational H2 Database (File-backed with MySQL compatibility mode)</li>
+<li><strong>Telemetry:</strong> Spring Boot Actuator (<code>/actuator/health</code>, <code>/metrics</code>, <code>/info</code>)</li>
+<li><strong>Presentation Layer:</strong></li>
+<li><strong>Templates:</strong> Server-Side Rendered (SSR) Thymeleaf 3</li>
+<li><strong>Styling &amp; Layout:</strong> Responsive Bootstrap 5.3 + Custom CSS3 Design Tokens</li>
+<li><strong>Interactivity:</strong> Vanilla JavaScript (ES6+), Chart.js</li>
+<li><strong>Artificial Intelligence Subsystem:</strong></li>
+<li><strong>Model:</strong> Ultralytics YOLOv8n (Nano architecture, 3.01M parameters)</li>
+<li><strong>Engine:</strong> PyTorch 2.11.0 (CPU execution)</li>
+<li><strong>Data Pipeline:</strong> Roboflow PKLot v2 (Curitiba &amp; Maringá, Brazil; 640x640)</li>
+<li><strong>Integration:</strong> Isolated OS subprocess via Java <code>ProcessBuilder</code> with strict IPC JSON parsing</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 4: End-to-End DevOps Architecture</h2>
+<h3><strong>Automated CI/CD and Infrastructure Pipeline</strong></h3>
+<pre><code class="language-mermaid">
+graph TD
+    Developer([Developer Commit]) --&gt;|Git Push| GitRepo[(Git Master Branch)]
+    GitRepo --&gt;|Webhook / Polling| Jenkins[Jenkins CI/CD Controller]
+    
+    subgraph "Jenkins 9-Stage Declarative Pipeline"
+        Stage1[1. Checkout SCM] --&gt; Stage2[2. Env Verification]
+        Stage2 --&gt; Stage3[3. Compile &amp; Resources]
+        Stage3 --&gt; Stage4[4. Automated Unit &amp; Integration Tests]
+        Stage4 --&gt; Stage5[5. Package Executable JAR]
+        Stage5 --&gt; Stage6[6. Archive Test Results]
+        Stage6 --&gt; Stage7[7. Multi-Stage Docker Build]
+        Stage7 --&gt; Stage8[8. Health Auditing &amp; Rollback Gate]
+        Stage8 --&gt; Stage9[9. Containerized Deployment]
+    end
+    
+    Jenkins --&gt; AppContainer[Docker Container: ParkWatch App]
+    AppContainer --&gt; NginxProxy[Nginx Reverse Proxy: Port 80]
+    Ansible[Ansible Playbook: WSL2] --&gt;|IaC Provisioning| HostServer[Ubuntu/Host Server Setup]
+    Selenium[Selenium WebDriver Suite] --&gt;|Automated E2E Testing| NginxProxy
+</code></pre>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 5: Data Modeling, Provenance &amp; Transparency</h2>
+<h3><strong>Municipal Data Modeling &amp; Dataset Disclosure</strong></h3>
+<ul>
+<li><strong>Domain Entities:</strong></li>
+<li><code>ParkingLocation</code>: Encapsulates lot identity, capacity, occupied spaces, contact phone, and calculated availability status (<code>FULL</code>, <code>LOW</code>, <code>AVAILABLE</code>, <code>STALE</code>).</li>
+<li><code>ParkingEvent</code>: Immutable audit trail capturing vehicle check-ins, check-outs, and occupancy adjustments with operator attribution.</li>
+<li><strong>Data Provenance &amp; Empirical Reality:</strong></li>
+<li>The live persistent database contains <strong>25 verified facilities</strong> across 9 major Indian urban hubs (Mumbai MMR, Delhi NCR, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, Chandigarh).</li>
+<li>Facility #25 (<code>PPL-099 Civic Center Innovation Garage</code>) was dynamically created during automated endpoint regression testing.</li>
+<li>Real-time sensor telemetry is simulated for academic demonstration as BMC does not provide an open public API.</li>
+<li>Camera frames evaluated by AI originate from the academic <strong>PKLot v2</strong> dataset (Curitiba, Brazil) and do not represent live Mumbai sensor feeds.</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 6: AI Computer Vision Integration</h2>
+<h3><strong>Parking Stall Detection using YOLOv8n</strong></h3>
+<ul>
+<li><strong>Integration Design:</strong></li>
+<li><strong>Isolated Subprocess:</strong> Java <code>AiAnalysisService</code> invokes <code>scripts/ai_inference_demo.py</code> using <code>ProcessBuilder</code> with array arguments (immune to shell injection).</li>
+<li><strong>Communication:</strong> Standard stream redirection with JSON marker delimiters (<code>__JSON_RESULT_START__</code> ... <code>__JSON_RESULT_END__</code>).</li>
+<li><strong>Visual Annotation:</strong> OpenCV renders color-coded bounding boxes on the camera frame (Green = Empty Stall, Red = Occupied Stall) and generates a persistent annotated JPEG.</li>
+<li><strong>Pilot Model Metrics (Honest Academic Disclosure):</strong></li>
+<li>Architecture: YOLOv8n (6.24 MB checkpoint)</li>
+<li>Training: 1-epoch pilot run on 174 CPU subsampled images</li>
+<li>Test $mAP_{50}$: <code>0.0063 (0.63%)</code> | Precision: <code>0.0087</code> | Recall: <code>0.0500</code></li>
+<li>Pilot Operating Threshold: $\text{conf} = 0.005$</li>
+<li>End-to-End Latency: $3.35$ seconds on standard multi-core CPU</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 7: Security &amp; Reliability Protections</h2>
+<h3><strong>Enterprise-Grade Defensive Controls</strong></h3>
+<ol>
+<li><strong>Input Validation:</strong> Multipart uploads limited to 10 MB; file extension whitelisted (<code>jpg</code>, <code>jpeg</code>, <code>png</code>, <code>webp</code>, <code>bmp</code>).</li>
+<li><strong>Deep Raster Verification:</strong> Non-image payloads and corrupted byte streams rejected via <code>ImageIO.read()</code>.</li>
+<li><strong>Decompression Bomb Protection:</strong> Dimension validation rejects frames smaller than $64 \times 64$ or larger than $4096 \times 4096$.</li>
+<li><strong>Execution Timeout:</strong> Subprocess execution capped at 45 seconds with forced destruction (<code>process.destroyForcibly()</code>).</li>
+<li><strong>Path Traversal Jail:</strong> Image delivery endpoint (<code>/ai-analysis/image/{filename}</code>) sanitizes paths against <code>..</code> attacks and confines reads to <code>data/ai_results/</code>.</li>
+<li><strong>Database Immutability:</strong> AI service operates strictly read-only relative to the database; zero writes to <code>parkingdb.mv.db</code>.</li>
+<li><strong>Concurrency Safety:</strong> Every analysis generates a unique UUID filename, preventing concurrent overwrite collisions.</li>
+</ol>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 8: Testing &amp; Quality Assurance</h2>
+<h3><strong>Comprehensive Multi-Level Test Pyramid</strong></h3>
+<ul>
+<li><strong>Spring Boot Backend Test Suite:</strong></li>
+<li><strong>Total Tests:</strong> 45 tests executed (0 failures, 0 errors, 0 skipped).</li>
+<li><strong>Coverage:</strong> Unit tests (<code>ParkingLocationServiceTest</code>), Controller integration (<code>ParkingApiControllerTest</code>), Web routing (<code>ParkingEventControllerTest</code>, <code>AiAnalysisControllerTest</code>), Context boot (<code>ParkingDashboardApplicationTests</code>).</li>
+<li><strong>Selenium Browser Automation Suite:</strong></li>
+<li><strong>Framework:</strong> Selenium WebDriver 4.21.0 on Microsoft Edge (Headless).</li>
+<li><strong>Results:</strong> 7 out of 7 E2E scenarios passing (Dashboard load, search, filter, detail view, form update, negative validation, alerts page).</li>
+<li><strong>Evidence:</strong> 7 full-resolution timestamped screenshots captured in <code>target/selenium-screenshots/</code>.</li>
+<li><strong>Python AI Pipeline Unit Tests:</strong></li>
+<li><strong>Test Suite:</strong> 6 Python tests verifying CLI flags, COCO-to-YOLO conversion, dimension bounds, and error handling (<code>tests/test_ai_pipeline.py</code>). All 6 passed (0.079s).</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 9: Infrastructure as Code &amp; Continuous Delivery</h2>
+<h3><strong>Ansible, Docker, Nginx &amp; Jenkins</strong></h3>
+<ul>
+<li><strong>Declarative Jenkins Pipeline (Task 12):</strong></li>
+<li>Evaluated on Jenkins 2.580.1 LTS.</li>
+<li>Successfully ran <strong>Build #12</strong> with 9 green stages from SCM checkout to automated health auditing.</li>
+<li><strong>Docker Multi-Stage Build (Task 10):</strong></li>
+<li>Alpine-based multi-stage Dockerfile producing a slim ~200MB runtime container running under unprivileged user <code>parkingapp</code> (UID 1001).</li>
+<li><strong>Production Reverse Proxy (Task 11):</strong></li>
+<li>Nginx reverse proxy on port 80 routing traffic to backend containers with custom upstream health checks, HTTP caching, and DDoS connection limits.</li>
+<li><strong>Ansible Automation (Task 13):</strong></li>
+<li>Automated host provisioning playbook executed in WSL2 Ubuntu (<code>ok=12, changed=3, failed=0</code>), configuring keyrings, Docker packages, directories, and templates.</li>
+<li><strong>Automated Rollback (Task 14):</strong></li>
+<li>Disaster recovery scripts (<code>rollback.ps1</code> and <code>rollback.sh</code>) tested live on port 8082, recovering from bad deployments within 3 retries.</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 10: Live Enhancements (Task 17)</h2>
+<h3><strong>Key Improvements Implemented &amp; Verified</strong></h3>
+<ol>
+<li><strong>Hibernate Proxy JSON Bug Resolution:</strong></li>
+</ol>
+<ul>
+<li>Fixed <code>InvalidDefinitionException</code> on <code>GET /api/v1/events/recent</code> and <code>GET /api/v1/events/location/{id}</code> using <code>@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})</code>.</li>
+</ul>
+<ol>
+<li><strong>Global Event Audit Log (<code>/events</code>):</strong></li>
+</ol>
+<ul>
+<li>Added cross-facility audit log page with direct links to facilities, operator attribution, and timestamp sorting.</li>
+</ul>
+<ol>
+<li><strong>Municipal Data Export (CSV):</strong></li>
+</ol>
+<ul>
+<li>Added <code>GET /api/v1/locations/export</code> endpoint generating clean RFC 4180 CSV downloads with one-click button on dashboard header.</li>
+</ul>
+<ol>
+<li><strong>Data Freshness Indicators:</strong></li>
+</ol>
+<ul>
+<li>Integrated visual telemetry delay warnings on dashboard rows for lots exceeding the 60-minute threshold.</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 11: Challenges Encountered &amp; Resolutions</h2>
+<table>
+<thead><tr>
+<th>Challenge</th>
+<th>Root Cause</th>
+<th>Engineering Resolution</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Jenkins Local SCM Security</strong></td>
+<td>Git Plugin blocked <code>file:///</code> URLs (SECURITY-2824).</td>
+<td>Activated <code>ALLOW_LOCAL_CHECKOUT=true</code> in Jenkins init scripts.</td>
+</tr>
+<tr>
+<td><strong>Alpine Line-Ending Errors</strong></td>
+<td>Windows CRLF in <code>mvnw</code> broke Alpine Linux <code>/bin/sh</code>.</td>
+<td>Added <code>sed -i 's/\r$//' ./mvnw</code> in multi-stage Dockerfile.</td>
+</tr>
+<tr>
+<td><strong>Port 8080 Collision</strong></td>
+<td>Host Jenkins service occupies port 8080.</td>
+<td>Parameterized application port to 8085 / 8081 across configs.</td>
+</tr>
+<tr>
+<td><strong>Jackson Proxy Serialization</strong></td>
+<td>Lazy entity fetch in <code>ParkingEvent</code> failed JSON mapping.</td>
+<td>Added <code>@JsonIgnoreProperties</code> on entity proxies.</td>
+</tr>
+<tr>
+<td><strong>Pilot YOLO Logit Calibration</strong></td>
+<td>1-epoch pilot training produced uncalibrated logits.</td>
+<td>Implemented dynamic confidence threshold slider in web UI.</td>
+</tr>
+</table>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 12: Future Scope &amp; Conclusion</h2>
+<h3><strong>Production Roadmap &amp; Key Takeaways</strong></h3>
+<ul>
+<li><strong>Future Enhancements:</strong></li>
+</ul>
+<ol>
+<li>Distributed edge inference using NVIDIA Jetson or TensorRT containers.</li>
+<li>Multi-epoch full GPU training on expanded municipal datasets.</li>
+<li>OAuth2 / JWT authentication for municipal parking operator access.</li>
+<li>Kubernetes (EKS/GKE) Helm chart deployment with Horizontal Pod Autoscalers.</li>
+</ol>
+<ul>
+<li><strong>Summary:</strong></li>
+<li>Successfully demonstrated an end-to-end DevOps lifecycle from code to cloud orchestration.</li>
+<li>Successfully integrated experimental computer-vision AI while enforcing complete database isolation.</li>
+<li>100% of academic and practical requirements verified with genuine test logs and screenshots.</li>
+</ul>
+<hr/>
+</div>
+<div class="slide">
+<h2>Slide 13: Thank You &amp; Viva Voce</h2>
+<ul>
+<li><strong>Open for Questions &amp; Demonstrations</strong></li>
+<li><strong>Live Demo Available at:</strong> <code>http://localhost:8085/</code> (Dashboard), <code>/ai-analysis</code> (AI Vision), <code>/events</code> (Audit Log)</li>
+<li><strong>Reports Directory:</strong> <code>REPORTS/TASK_01_Report.md</code> through <code>TASK_17_DASHBOARD_AUDIT.md</code></li>
+</ul>
+</div>
+</body>
+</html>

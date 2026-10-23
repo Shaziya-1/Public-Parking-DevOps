@@ -1,5 +1,6 @@
 package com.parking.dashboard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ public class ParkingEvent {
     @NotNull(message = "Parking location is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parking_location_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ParkingLocation parkingLocation;
 
     @NotNull(message = "Event type is required")

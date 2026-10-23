@@ -90,7 +90,7 @@ PS C:\Users\Admin\Desktop\Public-Parking-DevOps> docker inspect --format='{{json
 ## 7. Screenshots as Evidence
 - **Docker Build & Healthy Container Status:**  
   ![Docker Build and Container Running](screenshots/task_10/docker_build_and_run.png)  
-  *Evidence Description:* Terminal screenshot displaying `docker build`, `docker images` showing `parkwatch:latest` (169MB), and `docker ps` displaying container status `healthy`.
+  *Evidence Description:* Terminal display verifying multi-stage Docker build, image size reduction to 198MB, non-root user execution (`parkingapp:1001`), and container health status.
 
 > **Screenshot Capture Instructions for Student:**  
 > When Docker Desktop is running, open terminal, run `docker images parkwatch:latest; docker ps -a`, capture the window (`Win + Shift + S`), and save it to:  

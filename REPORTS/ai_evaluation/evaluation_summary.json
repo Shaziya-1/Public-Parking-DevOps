@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-10-17T19:04:18Z",
+  "evaluation_type": "SMOKE_TEST (Fast Verification)",
+  "split": "test",
+  "model_checkpoint": "C:\\Users\\Admin\\Desktop\\Public-Parking-DevOps\\models\\parkwatch_yolov8n\\weights\\best.pt",
+  "mAP50": 0.0063,
+  "mAP50_95": 0.0021,
+  "mean_precision": 0.0087,
+  "mean_recall": 0.05,
+  "per_class": {
+    "space-empty": {
+      "mAP50-95": 0.000451649993473067
+    },
+    "space-occupied": {
+      "mAP50-95": 0.003846229075293165
+    }
+  },
+  "elapsed_seconds": 122.11
+}

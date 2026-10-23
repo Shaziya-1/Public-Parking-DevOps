@@ -17,7 +17,7 @@ The **DevOps-Enabled Public Parking Availability Dashboard (ParkWatch)** is an e
 The system is constructed with a modern, resilient technology stack and adheres to rigorous DevOps best practices:
 - **Application Core:** Java 21 LTS, Spring Boot 3.3.4, Spring Data JPA, H2 Database.
 - **Frontend & Visualization:** Thymeleaf templates, custom responsive CSS3, JavaScript (ES6+), Chart.js.
-- **Data Ingestion:** 24 verified Brihanmumbai Municipal Corporation (BMC/MCGM) Public Parking Lots (PPLs) across Mumbai with 16,846 total capacity.
+- **Data Ingestion:** 25 municipal parking locations (24 pan-Indian metropolitan sample + 1 dynamic innovation garage) with 8,040 total capacity verified via live API.
 - **Automated Testing:** JUnit 5, Mockito, Spring MockMvc (45 tests passed), Selenium WebDriver 4.21.0 (7 E2E tests passed).
 - **Observability:** Spring Boot Actuator (`/actuator/health`, `/actuator/metrics`, `/actuator/info`).
 - **Containerization & Networking:** Multi-stage Dockerfile, Docker Compose v2, Nginx reverse proxy on port 80.
@@ -46,6 +46,8 @@ The system is constructed with a modern, resilient technology stack and adheres 
 | **Task 13** | Infrastructure as Code (Ansible Automation) | **COMPLETED** | Playbook executed in WSL2 Ubuntu (`ok=12, changed=3, failed=0`) | [TASK_13_Report.md](TASK_13_Report.md) |
 | **Task 14** | Automated Disaster Recovery & Rollback Scripts | **COMPLETED** | PowerShell & Bash rollback tested live on port 8082; health-check verified | [TASK_14_Report.md](TASK_14_Report.md) |
 | **Task 15** | Comprehensive Documentation & Academic Reports | **COMPLETED** | Full documentation in `docs/` and 15 evidence-backed reports in `REPORTS/` | [TASK_15_Report.md](TASK_15_Report.md) |
+| **Task 16** | AI Parking Analysis Integration & Security Audit | **COMPLETED** | Pilot YOLOv8n inference on CPU, JSON IPC, 12 security protections passed | [TASK_16_AI_INTEGRATION_VERIFICATION.md](TASK_16_AI_INTEGRATION_VERIFICATION.md) |
+| **Task 17** | Dashboard Audit, Data Provenance & Enhancements | **COMPLETED** | 25 locations audited, CSV export, global audit log, proxy bug fixed, 45 tests | [TASK_17_DASHBOARD_AUDIT.md](TASK_17_DASHBOARD_AUDIT.md) |
 
 ---
 

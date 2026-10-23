@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{fragments/header :: htmlHead('AI Analysis History | Public Parking Dashboard')}">
+    <title>AI Analysis History | Public Parking Dashboard</title>
+</head>
+
+<body class="bg-light d-flex flex-column min-vh-100">
+<!-- Navbar Fragment -->
+<nav th:replace="~{fragments/header :: navbar}"></nav>
+
+<main class="container-fluid px-4 py-4 flex-grow-1">
+
+    <!-- Header Section -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                <h2 class="h3 fw-bold mb-0 text-dark">AI Analysis Result History</h2>
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                    <i class="bi bi-clock-history me-1"></i>Persistent Records
+                </span>
+                <span class="badge bg-light text-muted border" th:text="${historyList.size()} + ' Analyses Saved'">0 Analyses Saved</span>
+            </div>
+            <p class="text-muted mb-0 small">
+                Permanent audit log of all completed AI parking stall and vehicle detection runs.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <a th:href="@{/ai-analysis}" class="btn btn-primary btn-sm">
+                <i class="bi bi-camera-video me-1"></i>New AI Analysis
+            </a>
+            <a th:href="@{/}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${#lists.isEmpty(historyList)}" class="card shadow-sm border-0 text-center py-5">
+        <div class="card-body">
+            <div class="mb-3">
+                <i class="bi bi-inbox text-muted" style="font-size: 3.5rem;"></i>
+            </div>
+            <h5 class="fw-bold text-dark mb-2">No AI Analyses Saved Yet</h5>
+            <p class="text-muted small mx-auto mb-4" style="max-width: 440px;">
+                Upload a parking image on the AI Analysis page to run detection. Completed analyses and annotated images will be recorded here automatically.
+            </p>
+            <a th:href="@{/ai-analysis}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-upload me-1"></i>Analyze an Image
+            </a>
+        </div>
+    </div>
+
+    <!-- History Table & Card List -->
+    <div th:unless="${#lists.isEmpty(historyList)}" class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <span class="fw-bold text-dark small text-uppercase">
+                <i class="bi bi-table text-primary me-2"></i>Analysis Execution Log (Newest First)
+            </span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle small">
+                <i class="bi bi-database-check me-1"></i>H2 Database Backed
+            </span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small">
+                    <tr>
+                        <th class="ps-3" style="width: 50px;">#</th>
+                        <th style="min-width: 140px;">Date &amp; Time</th>
+                        <th style="min-width: 110px;">Original</th>
+                        <th style="min-width: 110px;">Annotated</th>
+                        <th>Detection Mode</th>
+                        <th class="text-center">Vehicles</th>
+                        <th class="text-center">Stalls</th>
+                        <th class="text-center text-success">Empty</th>
+                        <th class="text-center text-danger">Occupied</th>
+                        <th style="min-width: 150px;">Occupancy</th>
+                        <th class="text-center">Conf</th>
+                        <th class="text-center">Latency</th>
+                        <th class="text-end pe-3" style="min-width: 100px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="small">
+                    <tr th:each="record : ${historyList}">
+                        <td class="ps-3 fw-mono text-muted" th:text="${record.id}">1</td>
+                        <td>
+                            <div class="fw-semibold text-dark" th:text="${#temporals.format(record.analysisTimestamp, 'dd MMM yyyy')}">18 Oct 2026</div>
+                            <div class="text-muted small" th:text="${#temporals.format(record.analysisTimestamp, 'HH:mm:ss')}">17:45:22</div>
+                        </td>
+                        <td>
+                            <a th:href="@{'/ai-analysis/image/' + ${record.originalImageFilename}}" target="_blank" title="View original image">
+                                <img th:src="@{'/ai-analysis/image/' + ${record.originalImageFilename}}"
+                                     alt="Original Upload"
+                                     class="img-thumbnail rounded shadow-sm"
+                                     style="width: 80px; height: 50px; object-fit: cover;"/>
+                            </a>
+                        </td>
+                        <td>
+                            <a th:href="@{'/ai-analysis/image/' + ${record.annotatedImageFilename}}" target="_blank" title="View annotated result">
+                                <img th:src="@{'/ai-analysis/image/' + ${record.annotatedImageFilename}}"
+                                     alt="Annotated Result"
+                                     class="img-thumbnail rounded shadow-sm border-primary"
+                                     style="width: 80px; height: 50px; object-fit: cover;"/>
+                            </a>
+                        </td>
+                        <td>
+                            <span th:if="${record.detectionMode == 'Calibrated Layout'}" class="badge bg-success-subtle text-success border border-success-subtle">
+                                <i class="bi bi-compass me-1"></i>Calibrated
+                            </span>
+                            <span th:if="${record.detectionMode == 'Surveillance Grid'}" class="badge bg-info-subtle text-info border border-info-subtle">
+                                <i class="bi bi-camera-video me-1"></i>Surveillance
+                            </span>
+                            <span th:if="${record.detectionMode != 'Calibrated Layout' and record.detectionMode != 'Surveillance Grid'}" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                <i class="bi bi-exclamation-circle me-1"></i>Uncalibrated
+                            </span>
+                        </td>
+                        <td class="text-center fw-bold">
+                            <span class="badge bg-info-subtle text-info-emphasis px-2 py-1" th:text="${record.vehiclesCount}">15</span>
+                        </td>
+                        <td class="text-center fw-bold" th:text="${record.totalStalls > 0 ? record.totalStalls : 'N/A'}">27</td>
+                        <td class="text-center fw-bold text-success" th:text="${record.totalStalls > 0 ? record.emptyStalls : 'N/A'}">12</td>
+                        <td class="text-center fw-bold text-danger" th:text="${record.totalStalls > 0 ? record.occupiedStalls : 'N/A'}">15</td>
+                        <td>
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-semibold small" th:text="${record.totalStalls > 0 ? record.occupancyPercentage + '%' : 'N/A'}">55.6%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar"
+                                     th:classappend="${record.occupancyPercentage >= 85 ? 'bg-danger' : (record.occupancyPercentage >= 65 ? 'bg-warning' : 'bg-success')}"
+                                     role="progressbar"
+                                     th:style="'width: ' + ${record.occupancyPercentage} + '%;'"
+                                     th:aria-valuenow="${record.occupancyPercentage}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100"></div>
+                            </div>
+                        </td>
+                        <td class="text-center fw-mono">
+                            <span class="badge bg-light text-dark border" th:text="${#numbers.formatDecimal(record.confidenceThreshold, 1, 2)}">0.25</span>
+                        </td>
+                        <td class="text-center text-muted fw-mono">
+                            <span th:text="${record.processingTimeMs}">4595</span> ms
+                        </td>
+                        <td class="text-end pe-3">
+                            <a th:href="@{'/ai-analysis/history/' + ${record.id}}" class="btn btn-outline-primary btn-sm px-2 py-1" title="Open analysis detail">
+                                <i class="bi bi-eye me-1"></i>Details
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Footer Fragment -->
+<footer th:replace="~{fragments/header :: footer}"></footer>
+</body>
+</html>

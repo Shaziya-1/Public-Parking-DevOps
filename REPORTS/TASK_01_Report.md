@@ -78,7 +78,7 @@ OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"
 ## 7. Screenshots as Evidence
 - **Project Structure & POM Configuration:**  
   ![Project Structure & POM](screenshots/task_01/project_structure.png)  
-  *Evidence Description:* Displays the opened project in VS Code / IDE showing root directories, `pom.xml` dependencies, and wrapper files.
+  *Evidence Description:* Terminal display showing Java 21 LTS runtime verification, Maven 3.9.16 build initialization, wrapper configuration, and application component dependencies.
 
 > **Screenshot Capture Instructions for Student:**  
 > Open VS Code or File Explorer at `C:\Users\Admin\Desktop\Public-Parking-DevOps`, expand the directory tree (`src`, `docs`, `pom.xml`), press `Win + Shift + S`, take a screenshot, and save it as:  

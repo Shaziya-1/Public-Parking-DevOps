@@ -59,6 +59,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" id="nav-events-log" th:href="@{/events}">
+                        <i class="bi bi-clock-history me-1"></i>Events Log
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" id="nav-events" th:href="@{/events/new}">
                         <i class="bi bi-pencil-square me-1"></i>Record Update
                     </a>
@@ -68,10 +73,20 @@
                         <i class="bi bi-exclamation-triangle me-1"></i>Alerts
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="nav-ai-analysis" th:href="@{/ai-analysis}">
+                        <i class="bi bi-camera-video me-1"></i>AI Analysis
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="nav-ai-history" th:href="@{/ai-analysis/history}">
+                        <i class="bi bi-clock-history me-1"></i>AI History
+                    </a>
+                </li>
             </ul>
             <!-- Right-side badge -->
             <span class="badge bg-warning text-dark fw-semibold">
-                <i class="bi bi-info-circle me-1"></i>Sample Data — Academic Project
+                <i class="bi bi-info-circle me-1"></i>      Academic Project
             </span>
         </div>
     </div>
@@ -92,11 +107,12 @@
                 <small>
                     Student: <strong class="text-white">Sajiya Shaikh</strong>
                     | Roll: <strong class="text-white">24102A2005</strong>
-                    | Academic Project &mdash; Sample Data Only
+                    | Academic Project 
                 </small>
             </div>
             <div>
                 <small>
+                    <a th:href="@{/ai-analysis}" class="text-white-50 text-decoration-none me-3">AI Analysis</a>
                     <a th:href="@{/about}" class="text-white-50 text-decoration-none me-3">About</a>
                     <a href="/h2-console" class="text-white-50 text-decoration-none me-3" target="_blank">H2 Console</a>
                     <a href="/actuator/health" class="text-white-50 text-decoration-none">Health</a>

@@ -1,7 +1,10 @@
 package com.parking.dashboard.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.parking.dashboard.dto.ParkingEventFormDto;
+import com.parking.dashboard.model.ParkingEvent;
 import com.parking.dashboard.model.ParkingLocation;
+import com.parking.dashboard.service.ParkingEventService;
 import com.parking.dashboard.service.ParkingLocationService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +39,9 @@ class ParkingApiControllerTest {
 
     @Autowired
     private ParkingLocationService locationService;
+
+    @Autowired
+    private ParkingEventService eventService;
 
     // ── Health Check ──────────────────────────────────────────────────────────
 
@@ -186,5 +192,61 @@ class ParkingApiControllerTest {
         // Verify it's gone
         mockMvc.perform(get("/api/v1/locations/{id}", saved.getId()))
                 .andExpect(status().isNotFound());
+    }
+
+    // ── Data Export & Event History ───────────────────────────────────────────
+
+    @Test
+    @DisplayName("GET /api/v1/locations/export should return 200 with text/csv")
+    void exportLocationsCsvReturns200WithCsvHeader() throws Exception {
+        locationService.save(new ParkingLocation("Export Test Lot", "South Ward", "100 Gateway", 120, 45));
+
+        mockMvc.perform(get("/api/v1/locations/export"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith("text/csv"))
+                .andExpect(content().string(containsString("ID,LocationCode,Name,Area,Address,TotalCapacity,OccupiedSpaces,AvailableSpaces,UtilizationPercentage,Status,LastUpdated")))
+                .andExpect(content().string(containsString("Export Test Lot")));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/events/recent should return 200 without lazy proxy serialization errors")
+    void getRecentEventsReturns200WithJsonArray() throws Exception {
+        ParkingLocation saved = locationService.save(
+                new ParkingLocation("Event Lot", "Central Ward", "200 Metro Way", 100, 20));
+
+        ParkingEventFormDto formDto = new ParkingEventFormDto();
+        formDto.setParkingLocationId(saved.getId());
+        formDto.setEventType(ParkingEvent.EventType.OCCUPANCY_UPDATE);
+        formDto.setReportedOccupancy(35);
+        formDto.setDescription("Test Sensor Check");
+        formDto.setOperatorName("Daemon Test");
+        eventService.recordEvent(formDto);
+
+        mockMvc.perform(get("/api/v1/events/recent"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].reportedOccupancy").isNumber())
+                .andExpect(jsonPath("$[0].parkingLocation.name").value("Event Lot"));
+    }
+
+    @Test
+    @DisplayName("GET /api/v1/events/location/{id} should return 200 with location events array")
+    void getEventsByLocationReturns200WithJsonArray() throws Exception {
+        ParkingLocation saved = locationService.save(
+                new ParkingLocation("Location Specific Lot", "North Ward", "300 Highway", 80, 10));
+
+        ParkingEventFormDto formDto = new ParkingEventFormDto();
+        formDto.setParkingLocationId(saved.getId());
+        formDto.setEventType(ParkingEvent.EventType.MANUAL_CORRECTION);
+        formDto.setReportedOccupancy(25);
+        formDto.setDescription("Manual Count Verification");
+        formDto.setOperatorName("Officer Test");
+        eventService.recordEvent(formDto);
+
+        mockMvc.perform(get("/api/v1/events/location/{id}", saved.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[0].reportedOccupancy").value(25))
+                .andExpect(jsonPath("$[0].eventType").value("MANUAL_CORRECTION"));
     }
 }

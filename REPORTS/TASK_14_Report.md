@@ -103,8 +103,8 @@ Container 'parkwatch-rollback-test' restored to 'public-parking-dashboard:1.0.0-
 
 ## 7. Screenshots and Verification Artifacts
 - **Automated Rollback Verification:**  
-  Live terminal transcript of successful failure detection, container eviction, and restoration to previous known-good tag documented above.
-  Target container cleaned up after test run: `docker rm -f parkwatch-rollback-test`.
+  ![Automated Disaster Recovery Rollback](screenshots/task_14/rollback_disaster_recovery.png)  
+  *Evidence Description:* Terminal display of automated disaster recovery execution detecting failed health checks, stopping broken container, and successfully restoring previous stable image on port 8082.
 
 ---
 

@@ -8,19 +8,32 @@
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a th:href="@{/}">Dashboard</a></li>
-            <li class="breadcrumb-item active">Events - <span th:text="${location.name}"></span></li>
+            <li th:if="${location != null}" class="breadcrumb-item"><a th:href="@{'/locations/' + ${location.id}}" th:text="${location.name}">Location</a></li>
+            <li class="breadcrumb-item active" th:text="${location != null ? 'Events' : 'All Recent Events'}">Events</li>
         </ol>
     </nav>
-    <h1 class="h4 fw-bold mb-4">
-        <i class="bi bi-clock-history text-primary me-2"></i>
-        Parking Events: <span th:text="${location.name}"></span>
-    </h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h4 fw-bold mb-0">
+            <i class="bi bi-clock-history text-primary me-2"></i>
+            <span th:if="${location != null}">Parking Events: <span th:text="${location.name}"></span></span>
+            <span th:if="${location == null}">Global Parking Event Audit Log</span>
+        </h1>
+        <div>
+            <a th:if="${location != null}" th:href="@{/events/new(locationId=${location.id})}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Record Update
+            </a>
+            <a th:if="${location == null}" th:href="@{/events/new}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Record Update
+            </a>
+        </div>
+    </div>
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <div th:if="${#lists.isEmpty(events)}" class="text-center py-5 text-muted">
                 <i class="bi bi-inbox display-5"></i>
                 <p class="mt-3">No events recorded yet.</p>
-                <a th:href="@{/events/new(locationId=${location.id})}" class="btn btn-sm btn-outline-primary">Record First Update</a>
+                <a th:if="${location != null}" th:href="@{/events/new(locationId=${location.id})}" class="btn btn-sm btn-outline-primary">Record First Update</a>
+                <a th:if="${location == null}" th:href="@{/events/new}" class="btn btn-sm btn-outline-primary">Record First Update</a>
             </div>
             <div th:if="${!#lists.isEmpty(events)}" class="table-responsive">
                 <table class="table table-hover align-middle mb-0" id="events-table">
@@ -28,6 +41,7 @@
                         <tr>
                             <th class="ps-3">ID</th>
                             <th>Timestamp</th>
+                            <th th:if="${location == null}">Location</th>
                             <th>Type</th>
                             <th class="text-center">Prev. Occupancy</th>
                             <th class="text-center">Reported Occupancy</th>
@@ -39,6 +53,12 @@
                         <tr th:each="ev : ${events}">
                             <td class="ps-3 text-muted small" th:text="${ev.id}"></td>
                             <td><small th:text="${#temporals.format(ev.eventTimestamp,'dd MMM yyyy HH:mm:ss')}"></small></td>
+                            <td th:if="${location == null}">
+                                <a th:if="${ev.parkingLocation != null}"
+                                   th:href="@{'/locations/' + ${ev.parkingLocation.id}}"
+                                   class="text-decoration-none fw-semibold"
+                                   th:text="${ev.parkingLocation.name}"></a>
+                            </td>
                             <td><span class="badge bg-secondary-subtle text-secondary border" th:text="${ev.eventType}"></span></td>
                             <td class="text-center" th:text="${ev.previousOccupancy != null ? ev.previousOccupancy : '—'}"></td>
                             <td class="text-center fw-semibold" th:text="${ev.reportedOccupancy}"></td>

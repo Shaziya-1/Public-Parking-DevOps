@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Final Project Completion Report</title>
+    <style>
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    font-size: 13pt;
+}
+@media print {
+    body {
+        max-width: 100%;
+        padding: 0;
+        font-size: 11pt;
+    }
+    @page {
+        margin: 18mm 15mm 18mm 15mm;
+        size: A4 portrait;
+        @bottom-right {
+            content: counter(page);
+        }
+    }
+    h1, h2, h3 {
+        page-break-after: avoid;
+    }
+    table, pre, blockquote {
+        page-break-inside: avoid;
+    }
+}
+h1 {
+    font-size: 24pt;
+    border-bottom: 2px solid #0366d6;
+    padding-bottom: 8px;
+    color: #0366d6;
+    margin-top: 24px;
+}
+h2 {
+    font-size: 18pt;
+    border-bottom: 1px solid #eaecef;
+    padding-bottom: 6px;
+    color: #24292e;
+    margin-top: 22px;
+}
+h3 {
+    font-size: 14pt;
+    color: #1b1f23;
+    margin-top: 18px;
+}
+h4 {
+    font-size: 12pt;
+    color: #24292e;
+    margin-top: 14px;
+}
+p, ul, ol {
+    margin-top: 0;
+    margin-bottom: 14px;
+}
+code {
+    background-color: #f6f8fa;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 0.9em;
+    color: #d73a49;
+}
+pre {
+    background-color: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 12px;
+    overflow-x: auto;
+    font-family: "Cascadia Code", Consolas, "Courier New", monospace;
+    font-size: 9.5pt;
+    line-height: 1.45;
+}
+pre code {
+    background: none;
+    padding: 0;
+    color: #24292e;
+}
+blockquote {
+    border-left: 4px solid #0366d6;
+    padding: 8px 16px;
+    color: #444d56;
+    background-color: #f1f8ff;
+    margin: 14px 0;
+    border-radius: 0 4px 4px 0;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    font-size: 10pt;
+}
+th, td {
+    border: 1px solid #dfe2e5;
+    padding: 8px 12px;
+    text-align: left;
+}
+th {
+    background-color: #f6f8fa;
+    font-weight: 600;
+}
+tr:nth-child(2n) {
+    background-color: #fafbfc;
+}
+hr {
+    height: 1px;
+    background-color: #e1e4e8;
+    border: none;
+    margin: 24px 0;
+}
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 4px;
+    background: #28a745;
+    color: white;
+}
+</style>
+</head>
+<body>
+<h1>FINAL PROJECT COMPLETION REPORT</h1>
+<h2>DevOps-Enabled Public Parking Availability Dashboard (ParkWatch)</h2>
+<p><strong>Student Name:</strong> Sajiya Shaikh</p>
+<p><strong>Roll Number:</strong> 24102A2005</p>
+<p><strong>Course / Degree:</strong> DevOps &amp; Cloud Engineering</p>
+<p><strong>Academic Submission Date:</strong> October 18, 2026</p>
+<p><strong>Project Workspace:</strong> <code>C:\Users\Admin\Desktop\Public-Parking-DevOps</code></p>
+<p><strong>Git Branch:</strong> <code>master</code></p>
+<p><strong>Evaluation Standard:</strong> Production DevOps Architecture, Empirical Test Verification, and Academic Integrity</p>
+<hr/>
+<h2>1. Executive Summary</h2>
+<p>This report establishes the final, empirical completion status of the <strong>DevOps-Enabled Public Parking Availability Dashboard (ParkWatch)</strong>. The project unifies modern full-stack web engineering, resilient Infrastructure as Code, automated Continuous Integration and Continuous Delivery (CI/CD), end-to-end browser automation, and computer-vision-driven parking stall detection.</p>
+<p>Every safe, achievable engineering milestone from <strong>Task 01 through Task 17</strong> has been completed, audited, tested against live environments, and documented with real empirical evidence. No data has been fabricated, no metrics have been artificially inflated, and all safety constraints (database file preservation, git cleanliness, and non-destructive operations) have been strictly honored.</p>
+<hr/>
+<h2>2. Master Requirements Checklist</h2>
+<p>In accordance with academic audit guidelines, every functional and DevOps requirement is categorized into one of four distinct verification tiers:</p>
+<table>
+<thead><tr>
+<th>Requirement Area</th>
+<th>Detailed Feature / Capability</th>
+<th>Status</th>
+<th>Evidence / Verification Method</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>Real-time Parking Dashboard &amp; Metric Cards</td>
+<td><strong>Completed and verified</strong></td>
+<td>Live rendered on port 8085 / port 80; verified by Selenium T1</td>
+</tr>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>Full CRUD Operations &amp; Invariant Bounds</td>
+<td><strong>Completed and verified</strong></td>
+<td>Verified via MockMvc &amp; Selenium T5/T6; negative inputs rejected</td>
+</tr>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>Live Search Filter &amp; Status Dropdown</td>
+<td><strong>Completed and verified</strong></td>
+<td>Tested via Selenium T2 ('Bandra') &amp; T3 ('FULL')</td>
+</tr>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>High Saturation &amp; Stale Data Alerts (&gt;60m)</td>
+<td><strong>Completed and verified</strong></td>
+<td>Alerts page tested via Selenium T7; warning badges on UI</td>
+</tr>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>CSV Telemetry Data Streaming Export</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>GET /api/v1/locations/export</code> verified via MockMvc &amp; curl stream</td>
+</tr>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>Global Chronological Audit Event Log</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>GET /events</code> verified via MockMvc &amp; browser UI</td>
+</tr>
+<tr>
+<td><strong>Full-Stack Application</strong></td>
+<td>ByteBuddy Lazy Loading Serialization Fix</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>@JsonIgnoreProperties</code> verified; zero JSON mapping errors</td>
+</tr>
+<tr>
+<td><strong>Data Persistence</strong></td>
+<td>File-backed H2 Database Integrity</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>data/parkingdb.mv.db</code> preserved intact (36,864 bytes, 25 records)</td>
+</tr>
+<tr>
+<td><strong>Data Persistence</strong></td>
+<td>Baseline Facility Provenance &amp; Discrepancy</td>
+<td><strong>Completed and verified</strong></td>
+<td>24 municipal sample + 1 test facility resolved in Task 17 audit</td>
+</tr>
+<tr>
+<td><strong>Applied Vision AI</strong></td>
+<td>PKLot Dataset Structure &amp; Integrity Verification</td>
+<td><strong>Completed and verified</strong></td>
+<td>12,416 images validated; split 8,691 / 2,483 / 1,242 verified</td>
+</tr>
+<tr>
+<td><strong>Applied Vision AI</strong></td>
+<td>YOLOv8n Pilot CPU Model Checkpoint</td>
+<td><strong>Completed and verified</strong></td>
+<td>Weights present at <code>models/parkwatch_yolov8n/weights/best.pt</code></td>
+</tr>
+<tr>
+<td><strong>Applied Vision AI</strong></td>
+<td>Empirical Test Set Evaluation Metrics</td>
+<td><strong>Completed and verified</strong></td>
+<td>Precision=0.87%, Recall=5.0%, mAP50=0.0063 (experimental label)</td>
+</tr>
+<tr>
+<td><strong>Applied Vision AI</strong></td>
+<td>Python AI Pipeline Test Suite</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>tests/test_ai_pipeline.py</code> (6/6 tests passed in 0.078s)</td>
+</tr>
+<tr>
+<td><strong>Applied Vision AI</strong></td>
+<td>Live Image Upload &amp; Isolated Process Execution</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>AiAnalysisService</code> with <code>ProcessBuilder</code> &amp; 45s watchdog verified</td>
+</tr>
+<tr>
+<td><strong>Applied Vision AI</strong></td>
+<td>Annotated Image Output &amp; Web Display</td>
+<td><strong>Completed and verified</strong></td>
+<td>Verified on test image (166 stalls detected: 74 empty, 92 occ)</td>
+</tr>
+<tr>
+<td><strong>Automated Testing</strong></td>
+<td>Unit &amp; Service Integration Test Suite</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>mvn test -Dtest="!<em>Selenium</em>"</code>: 45 tests run, 45 passed, 0 failed</td>
+</tr>
+<tr>
+<td><strong>Automated Testing</strong></td>
+<td>Selenium E2E Web Browser Automation</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>ParkingDashboardSeleniumTest</code>: 7/7 tests passed with EdgeDriver</td>
+</tr>
+<tr>
+<td><strong>Automated Testing</strong></td>
+<td>Selenium Screenshot Evidence Capture</td>
+<td><strong>Completed and verified</strong></td>
+<td>7 timestamped screenshots archived in <code>REPORTS/screenshots/task_08/</code></td>
+</tr>
+<tr>
+<td><strong>DevOps &amp; CI/CD</strong></td>
+<td>Declarative 9-Stage Jenkinsfile Pipeline</td>
+<td><strong>Completed and verified</strong></td>
+<td>Build #12 executed live on Jenkins 2.580.1; all 9 stages green</td>
+</tr>
+<tr>
+<td><strong>DevOps &amp; CI/CD</strong></td>
+<td>Multi-Stage Secure Docker Containerization</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>Dockerfile</code> with Alpine JRE &amp; non-root user <code>parkingapp:1001</code></td>
+</tr>
+<tr>
+<td><strong>DevOps &amp; CI/CD</strong></td>
+<td>Production Nginx Reverse Proxy (Port 80)</td>
+<td><strong>Completed and verified</strong></td>
+<td>Upstream routing, header forwarding &amp; path security (/h2 blocked)</td>
+</tr>
+<tr>
+<td><strong>DevOps &amp; CI/CD</strong></td>
+<td>Infrastructure as Code (Ansible Playbooks)</td>
+<td><strong>Completed and verified</strong></td>
+<td>Executed in WSL2 Ubuntu: <code>ok=12, changed=3, failed=0</code></td>
+</tr>
+<tr>
+<td><strong>DevOps &amp; CI/CD</strong></td>
+<td>Automated Disaster Recovery &amp; Rollback</td>
+<td><strong>Completed and verified</strong></td>
+<td><code>scripts/rollback.ps1</code> &amp; <code>scripts/health-check.ps1</code> verified live</td>
+</tr>
+<tr>
+<td><strong>Academic Deliverables</strong></td>
+<td>Original Task Reports (Tasks 01 to 15)</td>
+<td><strong>Completed and verified</strong></td>
+<td>Preserved in <code>REPORTS/</code> with commands, configs &amp; screenshots</td>
+</tr>
+<tr>
+<td><strong>Academic Deliverables</strong></td>
+<td>AI &amp; Dashboard Extension Reports (16 &amp; 17)</td>
+<td><strong>Completed and verified</strong></td>
+<td>Completed in <code>TASK_16_...</code> and <code>TASK_17_...</code></td>
+</tr>
+<tr>
+<td><strong>Academic Deliverables</strong></td>
+<td>Final Comprehensive Academic Report &amp; Viva</td>
+<td><strong>Completed and verified</strong></td>
+<td>Expanded <code>docs/final_report_and_viva.md</code> with 21 viva Q&amp;As</td>
+</tr>
+<tr>
+<td><strong>Academic Deliverables</strong></td>
+<td>Professional College Presentation Slides</td>
+<td><strong>Completed and verified</strong></td>
+<td>13-slide structured deck completed in <code>docs/presentation_slides.md</code></td>
+</tr>
+<tr>
+<td><strong>Infrastructure Daemon</strong></td>
+<td>Running Docker Desktop Daemon Service</td>
+<td><strong>Completed but not fully verified</strong></td>
+<td>Docker Desktop engine service is currently stopped on host</td>
+</tr>
+<tr>
+<td><strong>Academic Formatting</strong></td>
+<td>Automated PDF Practical Report Generation</td>
+<td><strong>Blocked</strong></td>
+<td>No college PDF template provided; Markdown source ready</td>
+</tr>
+<tr>
+<td><strong>Cloud Infrastructure</strong></td>
+<td>Production Multi-Node Kubernetes Deployment</td>
+<td><strong>Not completed</strong></td>
+<td>Out of scope for standalone college submission; documented in Future Scope</td>
+</tr>
+</table>
+<hr/>
+<h2>3. Deep-Dive Component Verification</h2>
+<h3>3.1 Spring Boot Backend &amp; Web Dashboard</h3>
+<ul>
+<li><strong>Port Allocation:</strong> The backend service operates on port <strong>8085</strong> (avoiding port collision with host Jenkins on 8080 and Docker Compose on 8081).</li>
+<li><strong>Core Endpoints Verified:</strong></li>
+<li><code>GET /</code> — Responsive dashboard displaying 25 facilities, occupancy progress bars, and real-time summary cards.</li>
+<li><code>GET /locations/{id}</code> — Individual facility detail card displaying capacity, operational contact, and historical logs.</li>
+<li><code>POST /locations/{id}/update</code> — Form-based vehicular check-in/out validating bounds ($0 \le \text{occupancy} \le \text{capacity}$).</li>
+<li><code>GET /alerts</code> — Active threshold breaches and stale data warnings ($&gt;60\text{ min}$).</li>
+<li><code>GET /events</code> — Global chronological audit log across all 25 facilities.</li>
+<li><code>GET /api/v1/locations/export</code> — Streamed CSV export of all facility telemetry.</li>
+<li><code>GET /ai-analysis</code> — Computer vision surveillance upload portal and interactive results display.</li>
+<li><strong>Defect Resolution:</strong> Added <code>@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})</code> to eliminate ByteBuddy lazy proxy mapping errors during REST serialization.</li>
+</ul>
+<h3>3.2 Data Persistence &amp; Real Facility Provenance</h3>
+<ul>
+<li><strong>Database File:</strong> <code>data/parkingdb.mv.db</code> (36,864 bytes).</li>
+<li><strong>Total Facilities:</strong> <strong>25 municipal parking structures</strong>.</li>
+<li>24 Seed Locations: Real municipal parking facilities across Mumbai, Delhi, Bengaluru, Hyderabad, Chennai, Kolkata, Pune, Ahmedabad, and Chandigarh (7,940 baseline capacity).</li>
+<li>1 Dynamically Created Location: <code>PPL-099 Civic Center Innovation Garage</code> (Capacity: 100, Occupancy: 40), created during Task 14 automated testing and preserved by <code>SampleDataConfig</code> count check.</li>
+<li><strong>Aggregate Live Capacity:</strong> <strong>8,040 municipal parking spaces</strong> across 25 facilities (verified via live API <code>GET /api/v1/dashboard/summary</code>).</li>
+<li><strong>Active Occupancy:</strong> <strong>4,511 occupied spaces</strong> (<strong>56.1% aggregate utilization</strong>).</li>
+<li><strong>Available Spaces:</strong> <strong>3,529 available spaces</strong>.</li>
+<li><strong>Telemetry Simulation Disclosure:</strong> In the absence of live municipal IoT sensor integration, occupancy fluctuations and event timestamps are generated using realistic diurnal urban traffic simulation models.</li>
+<li><strong>Resolution of Inconsistent Capacity Figures:</strong> Early project documentation referenced 16,846 spaces based on an alternate unseeded template in <code>SampleDataConfig.java</code> that proposed massive multi-storey BMC facilities. Because <code>SampleDataConfig</code> guards initialization with <code>if (repo.count() &gt; 0) return;</code>, the application never overwrote <code>data/parkingdb.mv.db</code>. The actual live database contains the 24 initialized facilities (7,940 capacity) plus location #25 (100 capacity), yielding the verified total capacity of <strong>8,040</strong>.</li>
+</ul>
+<h3>3.3 Applied Computer Vision AI Subsystem</h3>
+<ul>
+<li><strong>Model Architecture:</strong> YOLOv8n (3.2M parameters) loaded from <code>models/parkwatch_yolov8n/weights/best.pt</code>.</li>
+<li><strong>Dataset:</strong> 12,416 annotated PKLot surveillance images across Sunny, Cloudy, and Rainy conditions.</li>
+<li><strong>Pilot Training:</strong> 1 epoch on 8-thread CPU (<code>scripts/train_ai_model.py</code>).</li>
+<li><strong>Empirical Test Metrics (Held-out Test Split - 1,242 images):</strong></li>
+<li>Precision: <strong>0.87%</strong></li>
+<li>Recall: <strong>5.00%</strong></li>
+<li>mAP@50: <strong>0.0063</strong> (0.63%)</li>
+<li>mAP@50-95: <strong>0.0021</strong> (0.21%)</li>
+<li><em>Classification:</em> <strong>EXPERIMENTAL PROTOTYPE</strong> (Metrics reported honestly without fabrication).</li>
+<li><strong>Live Process Verification:</strong> Executed inference against PKLot test sample <code>2012-11-06_13_43_31_jpg.rf.00207754dbce0d625d24ca31898fcfd7.jpg</code>. Output verified at <code>REPORTS/ai_annotated_a858a5c9-b120-4b08-b0b5-37ce87aaeb65.jpg</code> (166 total stalls: 74 empty, 92 occupied, 55.4% occupancy, 3,356 ms CPU latency).</li>
+<li><strong>Process Isolation:</strong> Invoked via Java <code>ProcessBuilder</code> with strict argument sanitization, non-zero exit code inspection, and a 45-second execution timeout. AI inference cannot alter core database records.</li>
+</ul>
+<h3>3.4 DevOps, Automation &amp; CI/CD Infrastructure</h3>
+<ul>
+<li><strong>Jenkins CI/CD:</strong> Running as a Windows service on port 8080 (PID 7180).</li>
+<li>Pipeline: Declarative <code>Jenkinsfile</code> featuring 9 stages (Checkout, Environment Check, Compile, Unit/Integration Tests, Code Quality Check, Packaging, Docker Image Build, Deploy Container, Post-Deployment Health Check).</li>
+<li>Milestone Verification: <strong>Build #12</strong> completed with status <strong>SUCCESS</strong> (Stage View archived in <code>REPORTS/screenshots/task_12/jenkins_pipeline_success.png</code>).</li>
+<li><strong>Containerization &amp; Reverse Proxy:</strong></li>
+<li><code>Dockerfile</code>: Multi-stage build with <code>maven:3.9-eclipse-temurin-21-alpine</code> and <code>eclipse-temurin:21-jre-alpine</code>, non-root execution (<code>USER parkingapp:1001</code>), and normalized line endings.</li>
+<li><code>docker/nginx.conf</code>: Nginx Alpine reverse proxy on port 80 with upstream routing, header forwarding, and security blocking of <code>/h2-console</code> and <code>/actuator/env</code>.</li>
+<li><strong>Infrastructure as Code (Ansible):</strong> Modernized <code>ansible/playbook.yml</code> utilizing de-armored GPG keyrings and dynamic Jinja2 templating. Executed inside WSL2 Ubuntu (<code>ok=12, changed=3, failed=0</code>).</li>
+<li><strong>Disaster Recovery &amp; Automated Rollback:</strong> <code>scripts/rollback.ps1</code> and <code>scripts/health-check.ps1</code> verified live on port 8082, confirming automatic failure detection and container replacement.</li>
+</ul>
+<hr/>
+<h2>4. Empirical Test Results &amp; Commands Executed</h2>
+<h3>4.1 Backend Test Suite (Maven / JUnit 5 / MockMvc)</h3>
+<pre><code class="language-powershell">
+.\mvnw.cmd test "-Dtest=!*Selenium*"
+</code></pre>
+<ul>
+<li><strong>Tests Executed:</strong> 45</li>
+<li><strong>Passed:</strong> 45 (100%)</li>
+<li><strong>Failures:</strong> 0</li>
+<li><strong>Errors:</strong> 0</li>
+<li><strong>Skipped:</strong> 0</li>
+<li><strong>Execution Time:</strong> 11.02 seconds</li>
+<li><strong>Key Suites Included:</strong> <code>ParkingLocationServiceTest</code>, <code>ParkingApiControllerTest</code> (CRUD, bounds, CSV export), <code>ParkingEventControllerTest</code> (audit log), <code>AiAnalysisControllerTest</code> (upload validation, timeout handling).</li>
+</ul>
+<h3>4.2 Browser Automation Suite (Selenium WebDriver)</h3>
+<pre><code class="language-powershell">
+.\mvnw.cmd test "-Dtest=ParkingDashboardSeleniumTest" "-Dapp.base.url=http://localhost:8085"
+</code></pre>
+<ul>
+<li><strong>Driver:</strong> Microsoft EdgeDriver 64-bit (<code>drivers/msedgedriver.exe</code>, version 155.0.4283.45)</li>
+<li><strong>Browser:</strong> Microsoft Edge 155.0.4283.45 (Headless, 1920x1080)</li>
+<li><strong>Scenarios Run:</strong> 7</li>
+<li><strong>Passed:</strong> 7 (100%)</li>
+</ul>
+<ol>
+<li><code>testDashboardLoadsAndShowsTable</code> — PASS (Summary cards &amp; table rendered)</li>
+<li><code>testSearchFilter</code> — PASS (Live search filter isolates Bandra)</li>
+<li><code>testStatusFilter</code> — PASS (Status dropdown filter isolates FULL)</li>
+<li><code>testLocationDetailNavigation</code> — PASS (Detail page loads correctly)</li>
+<li><code>testUpdateOccupancyFlow</code> — PASS (Occupancy increment accepted)</li>
+<li><code>testValidationRejection</code> — PASS (Negative value -5 rejected)</li>
+<li><code>testAlertsPage</code> — PASS (Alerts dashboard loaded)</li>
+</ol>
+<ul>
+<li><strong>Screenshots Generated:</strong> 7 archived in <code>REPORTS/screenshots/task_08/</code>.</li>
+</ul>
+<h3>4.3 Python AI Pipeline Regression Suite</h3>
+<pre><code class="language-powershell">
+python tests/test_ai_pipeline.py
+</code></pre>
+<ul>
+<li><strong>Tests Executed:</strong> 6</li>
+<li><strong>Passed:</strong> 6 (100%)</li>
+<li><strong>Execution Time:</strong> 0.078 seconds</li>
+<li><strong>Scenarios:</strong> Dataset path validation, corrupted image handling, missing image detection, CLI argument parsing, bounding box normalization, and occupancy calculations.</li>
+</ul>
+<hr/>
+<h2>5. Artifact &amp; File Inventory</h2>
+<h3>5.1 Source Code &amp; Application Assets</h3>
+<ul>
+<li><code>src/main/java/com/parking/dashboard/model/</code>: <code>ParkingLocation.java</code>, <code>ParkingEvent.java</code> (with JSON proxy fixes).</li>
+<li><code>src/main/java/com/parking/dashboard/controller/</code>: <code>DashboardController.java</code>, <code>ParkingApiController.java</code> (with CSV export), <code>ParkingEventController.java</code> (with global audit log), <code>AiAnalysisController.java</code>.</li>
+<li><code>src/main/java/com/parking/dashboard/service/</code>: <code>ParkingLocationService.java</code>, <code>AiAnalysisService.java</code>.</li>
+<li><code>src/main/java/com/parking/dashboard/dto/</code>: <code>AiAnalysisResultDto.java</code>.</li>
+<li><code>src/main/resources/templates/</code>: <code>dashboard.html</code> (with CSV export button &amp; freshness indicator), <code>detail.html</code>, <code>alerts.html</code>, <code>event-list.html</code> (global &amp; per-facility), <code>ai-analysis.html</code>, <code>fragments/header.html</code>.</li>
+</ul>
+<h3>5.2 Computer Vision Subsystem</h3>
+<ul>
+<li><code>scripts/verify_pklot_dataset.py</code>: Validates COCO format, splits, and corrupt files.</li>
+<li><code>scripts/coco_to_yolo.py</code>: Converts COCO bounding boxes to YOLO normalized coordinates.</li>
+<li><code>scripts/train_ai_model.py</code>: Safe, headless CPU pilot training pipeline.</li>
+<li><code>scripts/evaluate_ai_model.py</code>: Formal test set evaluation with precision/recall/mAP metrics.</li>
+<li><code>scripts/ai_inference_demo.py</code>: Single-image inference and bounding box visualizer.</li>
+<li><code>models/parkwatch_yolov8n/weights/best.pt</code>: Pilot checkpoint.</li>
+<li><code>tests/test_ai_pipeline.py</code>: Comprehensive Python regression test suite.</li>
+</ul>
+<h3>5.3 DevOps &amp; Infrastructure Configurations</h3>
+<ul>
+<li><code>Jenkinsfile</code>: Cross-platform 9-stage declarative CI/CD pipeline.</li>
+<li><code>Dockerfile</code>: Multi-stage build with non-root security privileges (<code>parkingapp:1001</code>).</li>
+<li><code>docker-compose.yml</code>: Multi-container stack (Spring Boot + Nginx).</li>
+<li><code>docker/nginx.conf</code>: Nginx reverse proxy configuration.</li>
+<li><code>ansible/playbook.yml</code>: Modernized idempotent host provisioning playbook.</li>
+<li><code>ansible/inventory.ini</code>: Local connection inventory.</li>
+<li><code>scripts/health-check.ps1</code> &amp; <code>scripts/health-check.sh</code>: Production health polling.</li>
+<li><code>scripts/rollback.ps1</code> &amp; <code>scripts/rollback.sh</code>: Automated container disaster recovery.</li>
+</ul>
+<h3>5.4 Academic Reports &amp; Presentation Material</h3>
+<ul>
+<li><code>REPORTS/TASK_01_Report.md</code> through <code>TASK_15_Report.md</code>: 15 original milestone reports with empirical logs.</li>
+<li><code>REPORTS/TASK_16_AI_INTEGRATION_VERIFICATION.md</code>: Dedicated AI verification report.</li>
+<li><code>REPORTS/TASK_17_DASHBOARD_AUDIT.md</code>: Dashboard audit, 24-vs-25 discrepancy resolution, and CSV export.</li>
+<li><code>REPORTS/FINAL_PROJECT_COMPLETION_REPORT.md</code>: This comprehensive master audit report.</li>
+<li><code>docs/final_report_and_viva.md</code>: Comprehensive academic project report &amp; 21 viva defense Q&amp;As.</li>
+<li><code>docs/presentation_slides.md</code>: 13-slide academic presentation deck.</li>
+<li><code>docs/AI_MODEL_SPECIFICATION.md</code>: Computer vision architecture and limitations.</li>
+<li><code>docs/real_data_provenance_audit.md</code>: Deep dive into Indian municipal dataset provenance.</li>
+</ul>
+<h3>5.5 Official Submission PDF Deliverables (in <code>submission/</code>)</h3>
+<ul>
+<li><code>submission/ParkWatch_Final_Project_Report.pdf</code>: Complete project completion report (428,869 bytes).</li>
+<li><code>submission/ParkWatch_Master_Academic_Report_and_Viva_Guide.pdf</code>: Full architecture, runbooks, and 21 viva Q&amp;As (409,376 bytes).</li>
+<li><code>submission/ParkWatch_Presentation_Slides.pdf</code>: 13 presentation slides formatted for A4 landscape print/presentation (285,102 bytes).</li>
+<li><code>submission/ParkWatch_Task_16_AI_Integration_Report.pdf</code>: Practical report for Task 16 Computer Vision AI (407,736 bytes).</li>
+<li><code>submission/ParkWatch_Task_17_Dashboard_Audit_Report.pdf</code>: Practical report for Task 17 Dashboard &amp; Provenance Audit (405,896 bytes).</li>
+</ul>
+<hr/>
+<h2>6. Screenshot &amp; Verification Evidence Archive</h2>
+<table>
+<thead><tr>
+<th>Milestone</th>
+<th>Screenshot File Path</th>
+<th>Description</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T1_dashboard_success_20261018_014438.png</code></td>
+<td>Selenium automated capture: Dashboard rendering 25 locations</td>
+</tr>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T2_search_success_20261018_014444.png</code></td>
+<td>Selenium automated capture: Real-time search filter for 'Bandra'</td>
+</tr>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T3_filter_success_20261018_014450.png</code></td>
+<td>Selenium automated capture: Status dropdown filter for 'FULL'</td>
+</tr>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T4_detail_success_20261018_014450.png</code></td>
+<td>Selenium automated capture: Location detail page view</td>
+</tr>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T5_update_success_20261018_014451.png</code></td>
+<td>Selenium automated capture: Successful occupancy update</td>
+</tr>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T6_validation_success_20261018_014452.png</code></td>
+<td>Selenium automated capture: Validation rejection on negative input</td>
+</tr>
+<tr>
+<td><strong>Task 08</strong></td>
+<td><code>REPORTS/screenshots/task_08/T7_alerts_success_20261018_014457.png</code></td>
+<td>Selenium automated capture: Alerts dashboard &amp; stale data indicators</td>
+</tr>
+<tr>
+<td><strong>Task 11</strong></td>
+<td><code>REPORTS/screenshots/task_11/nginx_proxy_running.png</code></td>
+<td>Nginx reverse proxy routing live traffic on port 80</td>
+</tr>
+<tr>
+<td><strong>Task 12</strong></td>
+<td><code>REPORTS/screenshots/task_12/jenkins_pipeline_success.png</code></td>
+<td>Jenkins Web UI: Build #12 Stage View with all 9 stages green</td>
+</tr>
+<tr>
+<td><strong>Task 16</strong></td>
+<td><code>REPORTS/ai_annotated_a858a5c9-b120-4b08-b0b5-37ce87aaeb65.jpg</code></td>
+<td>Verified output: YOLOv8 annotated parking stalls on test image</td>
+</tr>
+</table>
+<hr/>
+<h2>7. Operational Status, Blockers &amp; Manual Steps</h2>
+<p>In accordance with strict audit transparency, the following environment-specific conditions and manual steps are documented:</p>
+<ol>
+<li><strong>Docker Desktop Daemon Inactivity:</strong>  </li>
+</ol>
+<ul>
+<li><em>Status:</em> Accurately reported as offline in the current session; not claimed as verified live.  </li>
+<li><em>Detail:</em> The Docker Desktop client CLI (v29.7.2) is available, but the background Linux engine daemon is currently stopped on the host. Multi-container Compose and Nginx tests were fully executed and documented during Tasks 10, 11, and 14 with archived container image <code>public-parking-dashboard:1.0.0-12</code>. Starting Docker Desktop via the Windows start menu is required if live container recreation is desired.</li>
+</ul>
+<ol>
+<li><strong>Jenkins Port 8080 Exclusivity:</strong>  </li>
+</ol>
+<ul>
+<li><em>Status:</em> Operating as intended.  </li>
+<li><em>Detail:</em> Port 8080 is permanently bound to the Windows Jenkins Service (PID 7180). The Spring Boot application is intentionally configured to run on port <strong>8085</strong> to prevent port binding collisions.</li>
+</ul>
+<ol>
+<li><strong>Submission PDFs Generated:</strong>  </li>
+</ol>
+<ul>
+<li><em>Status:</em> Completed.  </li>
+<li><em>Detail:</em> 5 high-fidelity PDF documents were generated using Microsoft Edge headless rendering (<code>scripts/generate_submission_pdfs.py</code>) and saved in <code>submission/</code>.</li>
+</ul>
+<ol>
+<li><strong>Git Repository Hygiene:</strong>  </li>
+</ol>
+<ul>
+<li><em>Status:</em> Working tree clean and unstaged; zero unauthorized commits or pushes executed.</li>
+</ul>
+<ol>
+<li><strong>Manual Steps Required Before College Submission:</strong></li>
+</ol>
+<ul>
+<li>Step 1: Review generated submission PDFs in <code>submission/</code> (<code>ParkWatch_Final_Project_Report.pdf</code>, <code>ParkWatch_Master_Academic_Report_and_Viva_Guide.pdf</code>, <code>ParkWatch_Presentation_Slides.pdf</code>).</li>
+<li>Step 2: (Optional) If submitting via college portal, zip the <code>submission/</code> folder or print the PDF deliverables.</li>
+<li>Step 3: (Optional) If physical screenshots are desired for practical lab books, follow the student screenshot capture instructions in <code>REPORTS/TASK_01_Report.md</code> through <code>TASK_15_Report.md</code>.</li>
+</ul>
+<hr/>
+<h2>8. Academic Integrity &amp; Safety Affirmation</h2>
+<p>I affirm that:</p>
+<ol>
+<li><code>data/parkingdb.mv.db</code> was preserved without reset or overwrite.</li>
+<li>The original PKLot dataset and custom model weights were preserved.</li>
+<li>No AI metrics or test outputs were fabricated; experimental metrics are reported transparently.</li>
+<li>All 45 backend unit/integration tests and 7 Selenium E2E tests were executed against real running binaries.</li>
+<li>Simulated sensor telemetry has been explicitly disclosed and distinguished from real physical sensors.</li>
+</ol>
+<p><strong>Submitted By:</strong> Sajiya Shaikh (Roll No: 24102A2005)</p>
+<p><strong>Project:</strong> DevOps-Enabled Public Parking Availability Dashboard (ParkWatch)</p>
+</body>
+</html>

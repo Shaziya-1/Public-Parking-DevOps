@@ -86,7 +86,7 @@ Implement the business logic tier in `ParkingLocationService` to enforce operati
 ## 7. Screenshots as Evidence
 - **Service Layer Test Execution:**  
   ![Service Tests Passing](screenshots/task_04/service_tests_passing.png)  
-  *Evidence Description:* Terminal output displaying Maven Surefire executing `ParkingLocationServiceTest` with 21 tests run, 0 failures, 0 errors, `BUILD SUCCESS`.
+  *Evidence Description:* Terminal output displaying Maven Surefire executing `ParkingLocationServiceTest` with 21 tests run, 0 failures, 0 errors, and BUILD SUCCESS validating business rules and capacity bounds.
 
 > **Screenshot Capture Instructions for Student:**  
 > Run `.\mvnw.cmd test -Dtest=ParkingLocationServiceTest` in your terminal, capture the successful test output (`Win + Shift + S`), and save it to:  

@@ -21,7 +21,7 @@
                 <span class="badge bg-warning text-dark">Illustrative Sample Data</span>
             </p>
         </div>
-        <div class="d-flex gap-2 align-items-center">
+        <div class="d-flex flex-wrap gap-2 align-items-center">
             <span class="text-muted small" id="last-refreshed">
                 <i class="bi bi-clock me-1"></i>Updated: <span id="refresh-time">now</span>
             </span>
@@ -29,6 +29,12 @@
                     onclick="location.reload()">
                 <i class="bi bi-arrow-clockwise me-1"></i>Refresh
             </button>
+            <a th:href="@{/api/v1/locations/export(format='csv')}" class="btn btn-outline-success btn-sm" id="btn-export-csv" title="Export parking facilities data to CSV">
+                <i class="bi bi-download me-1"></i>Export CSV
+            </a>
+            <a th:href="@{/events}" class="btn btn-outline-secondary btn-sm" id="btn-events-log" title="View global event audit log">
+                <i class="bi bi-clock-history me-1"></i>Events Log
+            </a>
             <a th:href="@{/locations/new}" class="btn btn-primary btn-sm" id="btn-add-location">
                 <i class="bi bi-plus-circle me-1"></i>Add Location
             </a>
@@ -293,8 +299,10 @@
                             </td>
                             <!-- Last Updated -->
                             <td class="text-center">
-                                <small class="text-muted"
-                                       th:text="${#temporals.format(loc.lastUpdated, 'dd MMM HH:mm')}">--</small>
+                                <small th:classappend="${loc.isStale(60)} ? 'text-warning-emphasis' : 'text-muted'">
+                                    <i th:if="${loc.isStale(60)}" class="bi bi-clock-history text-warning me-1" title="Telemetry delayed (>60 mins)"></i>
+                                    <span th:text="${#temporals.format(loc.lastUpdated, 'dd MMM HH:mm')}">--</span>
+                                </small>
                             </td>
                             <!-- Actions -->
                             <td class="text-center pe-3">

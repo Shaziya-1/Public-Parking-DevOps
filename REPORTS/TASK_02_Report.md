@@ -84,7 +84,7 @@ v1.0.0          Production Release v1.0.0 - ParkWatch DevOps Dashboard
 ## 7. Screenshots as Evidence
 - **Git Commit Log & Status Output:**  
   ![Git Commit History](screenshots/task_02/git_log_history.png)  
-  *Evidence Description:* Terminal screenshot displaying `git log --oneline`, `git status`, and `git tag -n` outputs.
+  *Evidence Description:* Terminal display showing structured Git commit history, semantic milestone commits, release tag `v1.0.0`, and clean working tree status on `master`.
 
 > **Screenshot Capture Instructions for Student:**  
 > Open a terminal in the project directory, execute `git log --oneline; git status; git tag -n`, press `Win + Shift + S`, take a screenshot of the terminal, and save it as:  

@@ -116,13 +116,9 @@ localhost                  : ok=12   changed=3    unreachable=0    failed=0    s
 
 ## 7. Screenshots and Verification Artifacts
 - **Playbook Play Recap Output:**  
-  Verified from live terminal output:
-  ```text
-  PLAY RECAP ********************************************************************************************************************************************************************************************************
-  localhost                  : ok=12   changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-  ```
-  Target directories verified inside filesystem:
-  `/opt/parkwatch/app`, `/opt/parkwatch/nginx`, `/opt/parkwatch/nginx/nginx.conf`.
+  ![Ansible Playbook Run](screenshots/task_13/ansible_playbook_run.png)  
+  *Evidence Description:* Terminal display of Ansible automation playbook execution in WSL2 Ubuntu confirming 12 tasks passed (`ok=12, changed=3, failed=0`).
+  Target directories verified inside filesystem: `/opt/parkwatch/app`, `/opt/parkwatch/nginx`, `/opt/parkwatch/nginx/nginx.conf`.
 
 ---
 

@@ -1,5 +1,6 @@
 package com.parking.dashboard.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "parking_location")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class ParkingLocation {
 
     @Id

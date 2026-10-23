@@ -97,7 +97,7 @@ Establish an automated backend testing suite using JUnit 5, Mockito, and Spring 
 ## 7. Screenshots as Evidence
 - **Maven Surefire Test Results & Package Success:**  
   ![Maven Test Results](screenshots/task_07/maven_test_results.png)  
-  *Evidence Description:* Terminal display showing Maven Surefire running all 33 tests across controller, service, and application classes with `BUILD SUCCESS`.
+  *Evidence Description:* Terminal display showing Maven Surefire running 45 tests across controller, service, and application classes with 0 failures, 0 errors, and BUILD SUCCESS.
 
 > **Screenshot Capture Instructions for Student:**  
 > Run `.\mvnw.cmd clean test` in your terminal, capture the summary showing `Tests run: 33, Failures: 0, Errors: 0, Skipped: 0` (`Win + Shift + S`), and save it to:  

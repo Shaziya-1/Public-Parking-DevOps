@@ -86,7 +86,7 @@ troubleshooting_guide.md      3259
 ## 7. Screenshots as Evidence
 - **Documentation Suite Overview:**  
   ![Documentation Overview](screenshots/task_15/documentation_overview.png)  
-  *Evidence Description:* Screenshot of VS Code / File Explorer displaying the populated `docs/` and `REPORTS/` folders with all markdown deliverables and diagrams.
+  *Evidence Description:* Terminal display showing the complete project tree across `docs/`, `REPORTS/`, and `submission/` containing all 15 technical milestone reports, diagrams, API specs, and final presentation slides.
 
 > **Screenshot Capture Instructions for Student:**  
 > Open VS Code showing the `docs/` and `REPORTS/` folder tree, capture the window (`Win + Shift + S`), and save it to:  

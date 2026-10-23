@@ -81,9 +81,13 @@ curl.exe -s http://localhost:8080/actuator/health
 ---
 
 ## 7. Screenshots as Evidence
-- **Spring Boot Actuator Health Telemetry:**  
-  ![Actuator Health Output](screenshots/task_09/actuator_health_output.png)  
-  *Evidence Description:* Terminal or browser screenshot showing the structured JSON output of `/actuator/health` reporting status `UP` with all nested subsystem indicators.
+- **Spring Boot Actuator Health Telemetry (`/actuator/health`):**  
+  ![Actuator Health Output](screenshots/task_09/actuator_health_endpoint.png)  
+  *Evidence Description:* Live browser query to `/actuator/health` displaying structured JSON status `UP` confirming relational database, disk space, and application liveness.
+
+- **Spring Boot Actuator Application Info (`/actuator/info`):**  
+  ![Actuator Info Output](screenshots/task_09/actuator_info_endpoint.png)  
+  *Evidence Description:* Live browser query to `/actuator/info` displaying application metadata, artifact version 1.0.0, and Java 21 runtime build information.
 
 > **Screenshot Capture Instructions for Student:**  
 > When the application is running, open `http://localhost:8080/actuator/health` in your browser or run `curl.exe http://localhost:8080/actuator/health`, capture the output (`Win + Shift + S`), and save it to:  

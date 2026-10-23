@@ -85,9 +85,13 @@ Design and implement a robust, versioned RESTful API under `/api/v1` supporting 
 ---
 
 ## 7. Screenshots as Evidence
-- **MockMvc API Test Execution & Postman Verification:**  
-  ![API Endpoints & Postman](screenshots/task_05/api_endpoints_postman.png)  
-  *Evidence Description:* Displays MockMvc test execution output or Postman / browser JSON query to `/api/v1/summary` and `/api/v1/locations`.
+- **REST API Summary Endpoint (`/api/v1/dashboard/summary`):**  
+  ![API Summary Endpoint](screenshots/task_05/api_summary_endpoint.png)  
+  *Evidence Description:* Live browser query to `/api/v1/dashboard/summary` displaying JSON aggregates: 25 total locations, 8,040 total capacity, 4,511 occupied spaces, and 56.1% overall utilization.
+
+- **REST API Locations List (`/api/v1/locations`):**  
+  ![API Locations List](screenshots/task_05/api_locations_list.png)  
+  *Evidence Description:* Live browser query returning formatted JSON array of all 25 municipal parking locations with calculated availability statuses.
 
 > **Screenshot Capture Instructions for Student:**  
 > Start the application and query `http://localhost:8080/api/v1/summary` in Edge or Postman, capture the formatted JSON response (`Win + Shift + S`), and save it to:  

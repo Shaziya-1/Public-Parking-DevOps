@@ -40,3 +40,29 @@ ansible/*.retry
 
 # WebDriver binaries
 drivers/
+
+# Datasets and AI Model Artifacts
+datasets/
+models/
+*.pt
+*.pth
+*.onnx
+
+# Python virtual environment and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Database Backups
+data_backup/
+data/backup/
+
+# Generated AI Demonstration Media
+REPORTS/ai_inference_output.jpg
+REPORTS/ai_evaluation/*.png
+
+# YOLO runs
+runs/
+
+

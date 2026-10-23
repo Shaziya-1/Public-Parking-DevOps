@@ -78,8 +78,12 @@ Build an interactive, modern, and mobile-responsive web user interface using Spr
 
 ## 7. Screenshots as Evidence
 - **Web UI Dashboard Overview:**  
-  ![Web Dashboard UI](screenshots/task_06/web_dashboard_ui.png)  
-  *Evidence Description:* Live browser view of `http://localhost:8080` displaying system statistics cards (Total Locations: 24, Total Capacity: 7940, Occupancy: 56.56%), Chart.js graph, and active alert badges.
+  ![Web Dashboard UI](screenshots/task_06/web_dashboard_live.png)  
+  *Evidence Description:* Live browser view of `http://localhost:8085/` displaying system statistics cards (Total Locations: 25, Total Capacity: 8,040, Occupancy: 56.1%), real-time search filter, and active alert badges.
+
+- **Facility Detail View & Ingress/Egress Controls:**  
+  ![Location Detail View](screenshots/task_06/location_detail_view.png)  
+  *Evidence Description:* Live browser view of `http://localhost:8085/locations/1` showing Bandra West facility details, current occupancy bar, update form, and recent vehicle activity history.
 
 > **Screenshot Capture Instructions for Student:**  
 > Run the application, open Microsoft Edge or your browser at `http://localhost:8080/`, capture the full dashboard window (`Win + Shift + S`), and save it to:  

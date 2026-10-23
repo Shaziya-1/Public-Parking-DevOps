@@ -82,4 +82,13 @@ public class ParkingEventController {
         model.addAttribute("pageTitle", "Events - " + location.getName());
         return "event-list";
     }
+
+    /** Recent events list across all locations (Global Audit Log) */
+    @GetMapping
+    public String allRecentEvents(@RequestParam(defaultValue = "50") int limit, Model model) {
+        List<ParkingEvent> events = eventService.findRecentEvents(Math.min(limit, 100));
+        model.addAttribute("events", events);
+        model.addAttribute("pageTitle", "Parking Event Audit Log");
+        return "event-list";
+    }
 }
